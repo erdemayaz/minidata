@@ -3,8 +3,8 @@ CFLAGS= -c -Wall
 
 all: minidata
 
-minidata: main.o file.o db.o command.o task.o
-	$(CC) main.o file.o db.o command.o task.o -o minidata
+minidata: main.o file.o db.o command.o task.o string.o
+	$(CC) main.o file.o db.o command.o task.o string.o -o minidata
 
 main.o: src/main.c
 	$(CC) $(CFLAGS) src/main.c
@@ -20,6 +20,9 @@ command.o: src/command.c
 
 task.o: src/task.c
 	$(CC) $(CFLAGS) src/task.c
+
+string.o: src/string.c
+	$(CC) $(CFLAGS) src/string.c
 
 clean:
 	rm -f *.o minidata

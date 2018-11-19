@@ -25,6 +25,7 @@ void cli()
 			printf("Undefined command\n");
 		}
 		clear_command(command_text);
+		free_command(c);
 	}
 	free(buffer);
 }

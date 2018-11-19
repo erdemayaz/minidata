@@ -27,7 +27,10 @@ void perform(command* c)
             task_new();
             break;
         case COMMAND_CREATE:
-            task_create(c->text);
+            if(c->word_size == 2)
+                task_create(c->words[1]);
+            else
+                printf("> 'CREATE' command takes 1 parameter(name:string)\n");
             break;
     }
 }

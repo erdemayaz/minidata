@@ -2,6 +2,7 @@
 #define _COMMAND_H_
 
 #define BUFFER_SIZE 256
+#define WORD_SIZE   4
 
 typedef enum command_type
 {
@@ -22,6 +23,8 @@ typedef enum command_type
 typedef struct command
 {
     char *text;
+    char **words;
+    int word_size;
     command_type type;
 } command;
 

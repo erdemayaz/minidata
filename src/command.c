@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/command.h"
+#include "../include/string.h"
 
 char* get_command(char* buffer)
 {
@@ -41,77 +42,100 @@ command* create_command(char* string)
 {
     command *c = (command*) malloc(sizeof(command));
     if(c)
-    {;
-        int i = 0, j;
-        while(string[i] != ' ' && string[i] != '\0') ++i;
-        char command_word[i];
-        for(j = 0; j < i; ++j)
-            command_word[j] = string[j];
-        command_word[i] = '\0';
+    {
+        int word_size = 0;
+        char **words = split_string(string, ' ', WORD_SIZE, &word_size);
+        char *command_word = words[0];
         if(strcmp(command_word, "CREATE") == 0)
         {
             c->type = COMMAND_CREATE;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "READ") == 0)
         {
             c->type = COMMAND_READ;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "UPDATE") == 0)
         {
             c->type = COMMAND_UPDATE;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "DELETE") == 0)
         {
             c->type = COMMAND_DELETE;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "DATABASE") == 0)
         {
             c->type = COMMAND_DATABASE;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "DROP") == 0)
         {
             c->type = COMMAND_DROP;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "EXIT") == 0)
         {
             c->type = COMMAND_EXIT;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "QUIT") == 0)
         {
             c->type = COMMAND_EXIT;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         }  
         else if(strcmp(command_word, "SELECT") == 0)
         {
             c->type = COMMAND_SELECT;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "LOGIN") == 0)
         {
             c->type = COMMAND_LOGIN;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "LOGOUT") == 0)
         {
             c->type = COMMAND_LOGOUT;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "NEW") == 0)
         {
             c->type = COMMAND_NEW;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         } 
         else if(strcmp(command_word, "REMOVE") == 0)
         {
             c->type = COMMAND_REMOVE;
             c->text = string;
+            c->words = words;
+            c->word_size = word_size;
         }
         else 
         {
