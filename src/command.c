@@ -34,6 +34,10 @@ void free_command(command* c)
 {
     if(c)
     {
+        int i;
+        for(i = 0; i < c->word_size; ++i)
+            free(c->words[i]);
+        free(c->words);
         free(c);
     }
 }

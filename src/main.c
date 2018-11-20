@@ -5,6 +5,8 @@
 #include "../include/command.h"
 #include "../include/task.h"
 
+DB *db;
+
 void cli()
 {
 	char *buffer = (char*) malloc(sizeof(char) * BUFFER_SIZE);
@@ -32,6 +34,7 @@ void cli()
 
 int main(int argc, char* argv[]) 
 {
+	db = NULL;
 	cli();
 	return 0;
 }

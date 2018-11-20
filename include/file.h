@@ -9,4 +9,6 @@ void close_file(FILE* file);
 
 FILE* create_file(char* name);
 
+int exist_file(char* path);
+
 #endif

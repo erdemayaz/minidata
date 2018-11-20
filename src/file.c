@@ -60,3 +60,17 @@ FILE* create_file(char* name)
 		return NULL;
 	}
 }
+
+int exist_file(char* path)
+{
+	FILE *f = fopen(path, "rb+");
+	if(f)
+	{
+		fclose(f);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
