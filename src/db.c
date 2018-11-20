@@ -4,6 +4,13 @@
 #include "../include/file.h"
 #include "../include/db.h"
 
+CTX* init_ctx()
+{
+    CTX *c = (CTX*) malloc(sizeof(CTX));
+    c->type = CTX_TERMINAL;
+    return c;
+}
+
 char* get_database_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + 8));

@@ -5,6 +5,7 @@
 #include "../include/command.h"
 #include "../include/task.h"
 
+CTX *ctx;
 DB *db;
 
 void cli()
@@ -34,6 +35,7 @@ void cli()
 
 int main(int argc, char* argv[]) 
 {
+	ctx = init_ctx();
 	db = NULL;
 	cli();
 	return 0;
