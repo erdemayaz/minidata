@@ -7,6 +7,8 @@ void task_database(char* name);
 
 void task_create();
 
+void task_drop(char* name);
+
 void perform(command* c);
 
 #endif

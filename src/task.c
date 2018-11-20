@@ -39,6 +39,18 @@ void task_create(char* name)
     }
 }
 
+void task_drop(char* name)
+{
+    if(drop_database(name))
+    {
+        printf("> database dropped\n");
+    }
+    else
+    {
+        printf("> database could not drop\n");
+    }
+}
+
 void perform(command* c)
 {
     switch(c->type)
@@ -63,5 +75,10 @@ void perform(command* c)
             else
                 printf("> 'CREATE' command takes 1 parameter(name:string)\n");
             break;
+        case COMMAND_DROP:
+            if(c->word_size == 2)
+                task_drop(c->words[1]);
+            else
+                printf("> 'DROP' command takes 1 parameter(name:string)\n");
     }
 }

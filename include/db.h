@@ -7,8 +7,12 @@ typedef struct db
     FILE *file;
 } DB;
 
+char* get_database_path(char* name);
+
 DB* load_database(char* name);
 
 int create_database(char* name);
+
+int drop_database(char* name);
 
 #endif
