@@ -34,26 +34,34 @@ void task_database(char* name)
 
 void task_create(char* name)
 {
-    if(create_database(name))
+    int status;
+    if(create_database(name, &status))
     {
         printf("Database created\n");
     }
     else
     {
-        if(!mkdir(db_folder))
+        if(status == 1)
         {
-            if(create_database(name))
+            printf("Already exists a database with this name\n");
+        }
+        else if(status == 2)
+        {
+            if(!mkdir(db_folder))
             {
-                printf("Database created\n");
+                if(create_database(name, &status))
+                {
+                    printf("Database created\n");
+                }
+                else
+                {
+                    printf("An unpredictable error occurred\n");
+                }
             }
             else
             {
-                printf("Database could not create\n");
+                printf("'%s' folder could not create\n", db_folder);
             }
-        }
-        else
-        {
-            printf("'%s' folder could not create\n", db_folder);
         }
     }
 }

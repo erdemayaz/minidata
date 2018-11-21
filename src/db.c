@@ -55,13 +55,14 @@ DB* load_database(char* name)
     }
 }
 
-int create_database(char* name)
+int create_database(char* name, int* status)
 {
     char *file_name = get_database_path(name);
-    FILE *f = create_file(file_name);
+    FILE *f = create_file(file_name, status);
     free(file_name);
     if(f)
     {
+        *status = 0;
         close_file(f);
         return 1;
     } else {

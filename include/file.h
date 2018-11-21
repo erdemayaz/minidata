@@ -7,7 +7,7 @@ char* read_file(char * path);
 
 void close_file(FILE* file);
 
-FILE* create_file(char* name);
+FILE* create_file(char* name, int* status);
 
 int exist_file(char* path);
 

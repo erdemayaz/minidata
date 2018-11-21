@@ -43,20 +43,26 @@ void close_file(FILE* file)
 		fclose(file);
 }
 
-FILE* create_file(char* name)
+FILE* create_file(char* name, int* status)
 {
 	FILE *f = fopen(name, "rb+");
 	if(f == NULL)
 	{
 		f = fopen(name, "wb");
 		if(f != NULL)
+		{
 			return f;
+		}
 		else
+		{
+			*status = 2;
 			return NULL;
+		}
 	} 
 	else 
 	{
 		close_file(f);
+		*status = 1;
 		return NULL;
 	}
 }
