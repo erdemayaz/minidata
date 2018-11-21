@@ -44,6 +44,8 @@ typedef struct context
 
 CTX* init_ctx();
 
+void destroy_ctx(CTX* c);
+
 char* get_database_path(char* name);
 
 DB* load_database(char* name);

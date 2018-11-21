@@ -6,7 +6,7 @@
 
 extern DB *db;
 
-void task_close()
+void task_close(int notify)
 {
     if(db != NULL)
     {
@@ -16,14 +16,15 @@ void task_close()
     }
     else
     {
-        printf("not exist database in context\n");
+        if(notify)
+            printf("Not exist database in context\n");
     }
 }
 
 void task_database(char* name)
 {
     if(db != NULL)
-        task_close();
+        task_close(1);
     db = load_database(name);
 }
 
@@ -31,11 +32,11 @@ void task_create(char* name)
 {
     if(create_database(name))
     {
-        printf("> database created\n");
+        printf("Database created\n");
     }
     else
     {
-        printf("> database could not create\n");
+        printf("Database could not create\n");
     }
 }
 
@@ -43,11 +44,11 @@ void task_drop(char* name)
 {
     if(drop_database(name))
     {
-        printf("> database dropped\n");
+        printf("Database dropped\n");
     }
     else
     {
-        printf("> database could not drop\n");
+        printf("Database could not drop\n");
     }
 }
 
@@ -61,24 +62,31 @@ void perform(command* c)
                 task_database(c->words[1]);
                 if(db != NULL)
                 {
-                    printf("connected to database...\n");
+                    printf("Connected to database\n");
                 }
             }
             else
             {
-                printf("> 'DATABASE' command takes 1 parameter(name:string)\n");
+                printf("'DATABASE' command takes 1 parameter(name:string)\n");
             }
             break;
         case COMMAND_CREATE:
             if(c->word_size == 2)
                 task_create(c->words[1]);
             else
-                printf("> 'CREATE' command takes 1 parameter(name:string)\n");
+                printf("'CREATE' command takes 1 parameter(name:string)\n");
             break;
         case COMMAND_DROP:
             if(c->word_size == 2)
                 task_drop(c->words[1]);
             else
-                printf("> 'DROP' command takes 1 parameter(name:string)\n");
+                printf("'DROP' command takes 1 parameter(name:string)\n");
+            break;
+        case COMMAND_CLOSE:
+            if(c->word_size == 1)
+                task_close(1);
+            else
+                printf("'CLOSE' command takes any parameter\n");
+            break;
     }
 }

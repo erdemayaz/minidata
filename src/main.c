@@ -7,6 +7,7 @@
 
 CTX *ctx;
 DB *db;
+char *db_folder = "db/";
 
 void cli()
 {
@@ -20,7 +21,10 @@ void cli()
 		if(c != NULL)
 		{
 			if(c->type == COMMAND_EXIT)
+			{
+				task_close(0);
 				break;
+			}
 			perform(c);
 		}
 		else
@@ -38,5 +42,6 @@ int main(int argc, char* argv[])
 	ctx = init_ctx();
 	db = NULL;
 	cli();
+	destroy_ctx(ctx);
 	return 0;
 }

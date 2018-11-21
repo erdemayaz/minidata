@@ -4,6 +4,8 @@
 #include "../include/file.h"
 #include "../include/db.h"
 
+extern char *db_folder;
+
 CTX* init_ctx()
 {
     CTX *c = (CTX*) malloc(sizeof(CTX));
@@ -11,10 +13,18 @@ CTX* init_ctx()
     return c;
 }
 
+void destroy_ctx(CTX* c)
+{
+    if(c)
+    {
+        free(c);
+    }
+}
+
 char* get_database_path(char* name)
 {
-    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + 8));
-    sprintf(file_name, "db/%s.mndt", name);
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
+    sprintf(file_name, "%s%s.mndt", db_folder, name);
     return file_name;
 }
 

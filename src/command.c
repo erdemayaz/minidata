@@ -141,6 +141,13 @@ command* create_command(char* string)
             c->words = words;
             c->word_size = word_size;
         }
+        else if(strcmp(command_word, "CLOSE") == 0)
+        {
+            c->type = COMMAND_CLOSE;
+            c->text = string;
+            c->words = words;
+            c->word_size = word_size;
+        } 
         else 
         {
             free_command(c);

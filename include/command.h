@@ -17,7 +17,8 @@ typedef enum command_type
     COMMAND_LOGIN,
     COMMAND_LOGOUT,
     COMMAND_NEW,
-    COMMAND_REMOVE
+    COMMAND_REMOVE,
+    COMMAND_CLOSE
 } command_type;
 
 typedef struct command
