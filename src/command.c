@@ -35,9 +35,12 @@ void free_command(command* c)
     if(c)
     {
         int i;
-        for(i = 0; i < c->word_size; ++i)
-            free(c->words[i]);
-        free(c->words);
+        if(c->words != NULL)
+        {
+            for(i = 0; i < c->word_size; ++i)
+                free(c->words[i]);
+            free(c->words);
+        }
         free(c);
     }
 }
@@ -45,6 +48,7 @@ void free_command(command* c)
 command* create_command(char* string)
 {
     command *c = (command*) malloc(sizeof(command));
+    c->words = NULL;
     if(c)
     {
         int word_size = 0;
@@ -57,6 +61,13 @@ command* create_command(char* string)
             c->words = words;
             c->word_size = word_size;
         } 
+        else if(strcmp(command_word, "ENTITY") == 0)
+        {
+            c->type = COMMAND_ENTITY;
+            c->text = string;
+            c->words = words;
+            c->word_size = word_size;
+        }
         else if(strcmp(command_word, "READ") == 0)
         {
             c->type = COMMAND_READ;

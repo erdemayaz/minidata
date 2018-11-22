@@ -16,6 +16,7 @@ typedef struct entity
 typedef struct db 
 {
     int id;
+    char *name;
     FILE *file;
     ENTITY *entities;
     int size;
@@ -49,6 +50,8 @@ void destroy_ctx(CTX* c);
 char* get_database_path(char* name);
 
 DB* load_database(char* name);
+
+void init_database(FILE* f, char* name);
 
 int create_database(char* name, int* status);
 

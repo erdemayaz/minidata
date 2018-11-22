@@ -13,6 +13,7 @@ void task_close(int notify)
     if(db != NULL)
     {
         close_file(db->file);
+        free(db->name);
         free(db);
         db = NULL;
     }
@@ -68,13 +69,32 @@ void task_create(char* name)
 
 void task_drop(char* name)
 {
-    if(drop_database(name))
+    if(db != NULL && strcmp(db->name, name) == 0)
     {
-        printf("Database dropped\n");
+        printf("Database is using\n");
     }
     else
     {
-        printf("Database could not drop\n");
+        if(drop_database(name))
+        {
+            printf("Database dropped\n");
+        }
+        else
+        {
+            printf("Database could not drop\n");
+        }
+    }
+}
+
+void task_entity(char* name)
+{
+    if(db->entities == NULL)
+    {
+
+    }
+    else
+    {
+        
     }
 }
 
@@ -91,9 +111,20 @@ void perform(command* c)
                     printf("Connected to database\n");
                 }
             }
+            else if(c->word_size == 1)
+            {
+                if(db != NULL)
+                {
+                    printf("<%s>\n", db->name);
+                }
+                else
+                {
+                    printf("<no database>\n");
+                }
+            }
             else
             {
-                printf("'DATABASE' command takes 1 parameter(name:identity)\n");
+                printf("'DATABASE' command takes 1 optional parameter(name:identity)\n");
             }
             break;
         case COMMAND_CREATE:
@@ -113,6 +144,19 @@ void perform(command* c)
                 task_close(1);
             else
                 printf("'CLOSE' command takes any parameter\n");
+            break;
+        case COMMAND_ENTITY:
+            if(db != NULL)
+            {
+                if(c->word_size == 2)
+                    task_entity(c->words[1]);
+                else
+                    printf("'ENTITY' command takes 1 parameter(name:identity)\n");
+            }
+            else
+            {
+                printf("Not exist database in context\n");
+            }
             break;
     }
 }

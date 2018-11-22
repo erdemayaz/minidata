@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include "../include/file.h"
 #include "../include/db.h"
+#include "../include/string.h"
+#include "../include/data.h"
 
 extern char *db_folder;
 
@@ -39,6 +42,14 @@ DB* load_database(char* name)
         if(f != NULL)
         {
             db->file = f;
+            data_unit *du = NULL;
+            du = read_data_unit(f);
+            db->name = (char*) du->data;
+            free_data_unit(du);
+            du = read_data_unit(f);
+            int *temp = (int*) du->data; 
+            db->size = *temp;
+            free_data_unit(du);
             return db;
         }
         else
@@ -55,6 +66,18 @@ DB* load_database(char* name)
     }
 }
 
+void init_database(FILE* f, char* name)
+{
+    uint32_t zero = 0;
+    data_unit *unit = NULL;
+    unit = create_data_unit(TYPE_STRING, strlen(name), (void*) name);
+    write_data_unit(f, unit);
+    free_data_unit(unit);
+    unit = create_data_unit(TYPE_NUMBER, 4, (void*) &zero);
+    write_data_unit(f, unit);
+    free_data_unit(unit);
+}
+
 int create_database(char* name, int* status)
 {
     char *file_name = get_database_path(name);
@@ -63,6 +86,7 @@ int create_database(char* name, int* status)
     if(f)
     {
         *status = 0;
+        init_database(f, name);
         close_file(f);
         return 1;
     } else {

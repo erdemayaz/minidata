@@ -9,6 +9,8 @@ void task_create();
 
 void task_drop(char* name);
 
+void task_entity(char* name);
+
 void perform(command* c);
 
 #endif
