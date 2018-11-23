@@ -9,6 +9,7 @@
 #include "../include/data.h"
 
 extern char *db_folder;
+extern DB *db;
 
 CTX* init_ctx()
 {
@@ -36,6 +37,13 @@ char* get_database_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
     sprintf(file_name, "%s%s/%s.mndt", db_folder, name, name);
+    return file_name;
+}
+
+char* get_entity_path(char* name)
+{
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
+    sprintf(file_name, "%s%s/%s.mnty", db_folder, db->name, name);
     return file_name;
 }
 
@@ -121,6 +129,70 @@ int drop_database(char* name)
             char *dir = get_database_dir(name);
             rmdir(dir);
             free(dir);
+            return 1;
+        }
+        else
+        {
+            free(file_name);
+            return 0;
+        }
+    }
+    else
+    {
+        free(file_name);
+        return 0;
+    }
+}
+
+ENTITY* create_entity(char* name, int* status)
+{
+    char *file_name = get_entity_path(name);
+    FILE *f = create_file(file_name, status);
+    free(file_name);
+    if(f)
+    {
+        close_file(f);
+        ENTITY *entity = (ENTITY*) malloc(sizeof(ENTITY));
+        entity->file = NULL;
+        entity->name = duplicate_string(name);
+        entity->records = NULL;
+        entity->size = 0;
+        *status = 0;
+        return entity;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+ENTITY** new_entity_list(uint32_t size)
+{
+    return (ENTITY**) malloc(sizeof(ENTITY*) * size);
+}
+
+ENTITY** expand_entity_list(ENTITY** entities, uint32_t size)
+{
+    return (ENTITY**) realloc(entities, (size + (size / 2)));
+}
+
+void free_entity(ENTITY* entity)
+{
+    if(entity->file != NULL)
+        fclose(entity->file);
+    free(entity->name);
+    free(entity);
+}
+
+int drop_entity(ENTITY* entity)
+{
+    char *file_name = get_entity_path(entity->name);
+    if(exist_file(file_name))
+    {
+        if(remove(file_name) == 0)
+        {
+            free(file_name);
+            free_entity(entity);
             return 1;
         }
         else

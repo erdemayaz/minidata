@@ -9,6 +9,8 @@ typedef struct record
 
 typedef struct entity
 {
+    char *name;
+    FILE *file;
     RECORD **records;
     int size;
 } ENTITY;
@@ -20,6 +22,7 @@ typedef struct db
     FILE *file;
     ENTITY **entities;
     int size;
+    int list_size;
 } DB;
 
 typedef enum context_t
@@ -51,6 +54,8 @@ char* get_database_dir(char* name);
 
 char* get_database_path(char* name);
 
+char* get_entity_path(char* name);
+
 DB* load_database(char* name);
 
 void init_database(FILE* f, char* name);
@@ -58,5 +63,15 @@ void init_database(FILE* f, char* name);
 int create_database(char* name, int* status);
 
 int drop_database(char* name);
+
+ENTITY* create_entity(char* name, int* status);
+
+ENTITY** new_entity_list(uint32_t size);
+
+ENTITY** expand_entity_list(ENTITY** entities, uint32_t size);
+
+void free_entity(ENTITY* entity);
+
+int drop_entity(ENTITY* entity);
 
 #endif

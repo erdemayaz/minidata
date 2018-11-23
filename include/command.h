@@ -2,7 +2,7 @@
 #define _COMMAND_H_
 
 #define BUFFER_SIZE 256
-#define WORD_SIZE   4
+#define WORD_SIZE   8
 
 typedef enum command_type
 {
