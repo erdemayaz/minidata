@@ -11,4 +11,6 @@ FILE* create_file(char* name, int* status);
 
 int exist_file(char* path);
 
+int exist_dir(char* dir);
+
 #endif

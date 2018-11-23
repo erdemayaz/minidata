@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+char* string(char* array, unsigned int size)
+{
+    char *s = (char*) malloc(sizeof(char) * (size + 1));
+    strcpy(s, array);
+    s[size] = '\0';
+    return s;
+}
+
 char* duplicate_string(char* origin)
 {
     char *dup = (char*) malloc(sizeof(char) * strlen(origin));

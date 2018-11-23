@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 FILE* open_file(char* path) 
 {
 	if(path != NULL) 
 	{
-		FILE *f = fopen(path, "w+");
+		FILE *f = fopen(path, "ab+");
 		if(f != NULL)
 			return f;
 	}
@@ -79,4 +81,15 @@ int exist_file(char* path)
 	{
 		return 0;
 	}
+}
+
+int exist_dir(char* dir)
+{
+	struct stat info;
+	if(stat(dir, &info) != 0)
+		return 0;
+	else if(info.st_mode & S_IFDIR)
+		return 1;
+	else
+		return 0;
 }

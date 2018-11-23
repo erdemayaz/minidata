@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <dir.h>
 #include "../include/file.h"
 #include "../include/db.h"
 #include "../include/string.h"
@@ -24,10 +25,17 @@ void destroy_ctx(CTX* c)
     }
 }
 
+char* get_database_dir(char* name)
+{
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder)));
+    sprintf(file_name, "%s%s/", db_folder, name);
+    return file_name;
+}
+
 char* get_database_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
-    sprintf(file_name, "%s%s.mndt", db_folder, name);
+    sprintf(file_name, "%s%s/%s.mndt", db_folder, name, name);
     return file_name;
 }
 
@@ -43,13 +51,21 @@ DB* load_database(char* name)
         {
             db->file = f;
             data_unit *du = NULL;
+
             du = read_data_unit(f);
-            db->name = (char*) du->data;
+            char *db_name = string((char*) du->data, du->size);
+            free(du->data);
+            db->name = db_name;
             free_data_unit(du);
+
             du = read_data_unit(f);
             int *temp = (int*) du->data; 
             db->size = *temp;
+            free(du->data);
             free_data_unit(du);
+
+            db->entities = NULL;
+
             return db;
         }
         else
@@ -102,6 +118,9 @@ int drop_database(char* name)
         if(remove(file_name) == 0)
         {
             free(file_name);
+            char *dir = get_database_dir(name);
+            rmdir(dir);
+            free(dir);
             return 1;
         }
         else

@@ -35,6 +35,20 @@ void task_database(char* name)
 
 void task_create(char* name)
 {
+    if(!exist_dir(db_folder) && mkdir(db_folder))
+    {
+        printf("'%s' folder could not created\n", db_folder);
+        return;
+    }
+
+    char *db_dir = get_database_dir(name);
+    if(!exist_dir(db_dir) && mkdir(db_dir))
+    {
+        printf("'%s' folder could not created\n", db_dir);
+        return;
+    }
+    free(db_dir);
+
     int status;
     if(create_database(name, &status))
     {
@@ -48,21 +62,7 @@ void task_create(char* name)
         }
         else if(status == 2)
         {
-            if(!mkdir(db_folder))
-            {
-                if(create_database(name, &status))
-                {
-                    printf("Database created\n");
-                }
-                else
-                {
-                    printf("An unpredictable error occurred\n");
-                }
-            }
-            else
-            {
-                printf("'%s' folder could not create\n", db_folder);
-            }
+            printf("Database file could not created\n");
         }
     }
 }
@@ -115,7 +115,7 @@ void perform(command* c)
             {
                 if(db != NULL)
                 {
-                    printf("<%s>\n", db->name);
+                    printf("<%s, %d entities>\n", db->name, db->size);
                 }
                 else
                 {

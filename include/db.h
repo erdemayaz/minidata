@@ -9,7 +9,7 @@ typedef struct record
 
 typedef struct entity
 {
-    RECORD *records;
+    RECORD **records;
     int size;
 } ENTITY;
 
@@ -18,7 +18,7 @@ typedef struct db
     int id;
     char *name;
     FILE *file;
-    ENTITY *entities;
+    ENTITY **entities;
     int size;
 } DB;
 
@@ -46,6 +46,8 @@ typedef struct context
 CTX* init_ctx();
 
 void destroy_ctx(CTX* c);
+
+char* get_database_dir(char* name);
 
 char* get_database_path(char* name);
 
