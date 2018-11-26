@@ -25,4 +25,10 @@ data_unit* read_data_unit(FILE* file);
 
 void free_data_unit(data_unit* unit);
 
+void write_string_unit(FILE* file, char* string);
+
+void write_unsigned_integer_unit(FILE* file, uint32_t integer);
+
+void write_integer_unit(FILE* file, int32_t integer);
+
 #endif

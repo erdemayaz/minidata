@@ -99,12 +99,14 @@ void task_create_entity(char* name)
             db->list_size = 4;
             db->entities[0] = e;
             db->size = 1;
+            append_entity(e);
         }
         else
         {
             if(db->size >= db->list_size)
             {
-                ENTITY **temp = expand_entity_list(db->entities, db->list_size);
+                printf("Expanded entity list\n");
+                ENTITY **temp = expand_entity_list(db->entities, &db->list_size);
                 if(temp != NULL)
                 {
                     db->entities = temp;
@@ -117,6 +119,7 @@ void task_create_entity(char* name)
                 }
             }
             db->entities[db->size] = e;
+            append_entity(e);
             db->size++;
         }
     }

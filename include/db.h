@@ -1,6 +1,8 @@
 #ifndef _DB_H_
 #define _DB_H_
 
+#include <stdint.h>
+
 typedef struct record
 {
     char *content;
@@ -22,7 +24,7 @@ typedef struct db
     FILE *file;
     ENTITY **entities;
     int size;
-    int list_size;
+    unsigned int list_size;
 } DB;
 
 typedef enum context_t
@@ -68,10 +70,12 @@ ENTITY* create_entity(char* name, int* status);
 
 ENTITY** new_entity_list(uint32_t size);
 
-ENTITY** expand_entity_list(ENTITY** entities, uint32_t size);
+ENTITY** expand_entity_list(ENTITY** entities, uint32_t* size);
 
 void free_entity(ENTITY* entity);
 
 int drop_entity(ENTITY* entity);
+
+void append_entity(ENTITY *entity);
 
 #endif

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 #include "../include/data.h"
 
@@ -34,4 +35,25 @@ void free_data_unit(data_unit* unit)
     // !!! ATTENTION : void *data not free !!!
     if(unit)
         free(unit);
+}
+
+void write_string_unit(FILE* file, char* string)
+{
+    data_unit *du = create_data_unit(TYPE_STRING, (uint32_t) strlen(string), string);
+    write_data_unit(file, du);
+    free_data_unit(du);
+}
+
+void write_unsigned_integer_unit(FILE* file, uint32_t integer)
+{
+    data_unit *du = create_data_unit(TYPE_NUMBER, 4, &integer);
+    write_data_unit(file, du);
+    free_data_unit(du);
+}
+
+void write_integer_unit(FILE* file, int32_t integer)
+{
+    data_unit *du = create_data_unit(TYPE_NUMBER, 4, &integer);
+    write_data_unit(file, du);
+    free_data_unit(du);
 }

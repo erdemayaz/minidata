@@ -35,14 +35,14 @@ char* get_database_dir(char* name)
 
 char* get_database_path(char* name)
 {
-    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
     sprintf(file_name, "%s%s/%s.mndt", db_folder, name, name);
     return file_name;
 }
 
 char* get_entity_path(char* name)
 {
-    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) + strlen(db_folder) + 5));
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
     sprintf(file_name, "%s%s/%s.mnty", db_folder, db->name, name);
     return file_name;
 }
@@ -171,9 +171,10 @@ ENTITY** new_entity_list(uint32_t size)
     return (ENTITY**) malloc(sizeof(ENTITY*) * size);
 }
 
-ENTITY** expand_entity_list(ENTITY** entities, uint32_t size)
+ENTITY** expand_entity_list(ENTITY** entities, uint32_t* size)
 {
-    return (ENTITY**) realloc(entities, (size + (size / 2)));
+    *size = *size + (*size / 2);
+    return (ENTITY**) realloc(entities, *size);
 }
 
 void free_entity(ENTITY* entity)
@@ -206,4 +207,10 @@ int drop_entity(ENTITY* entity)
         free(file_name);
         return 0;
     }
+}
+
+void append_entity(ENTITY *entity)
+{
+    write_string_unit(db->file, entity->name);
+    write_integer_unit(db->file, entity->size);
 }
