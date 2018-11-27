@@ -211,6 +211,7 @@ int drop_entity(ENTITY* entity)
 
 void append_entity(ENTITY *entity)
 {
+    fseek(db->file, 0, SEEK_END);
     write_string_unit(db->file, entity->name);
     write_integer_unit(db->file, entity->size);
 }

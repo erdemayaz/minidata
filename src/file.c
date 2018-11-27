@@ -9,7 +9,9 @@ FILE* open_file(char* path)
 	{
 		FILE *f = fopen(path, "ab+");
 		if(f != NULL)
+		{
 			return f;
+		}
 	}
 	return NULL;
 }
@@ -24,9 +26,9 @@ char* read_file(char * path)
 		FILE *f = fopen(path, "r");
 		if(f != NULL)
     	{
-      		fseek (f, 0, SEEK_END);
+      		fseek(f, 0, SEEK_END);
       		length = ftell (f);
-      		fseek (f, 0, SEEK_SET);
+      		fseek(f, 0, SEEK_SET);
       		string = (char*) malloc((length + 1) * sizeof(char));
       		if(string != NULL)
       		{

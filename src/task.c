@@ -105,7 +105,6 @@ void task_create_entity(char* name)
         {
             if(db->size >= db->list_size)
             {
-                printf("Expanded entity list\n");
                 ENTITY **temp = expand_entity_list(db->entities, &db->list_size);
                 if(temp != NULL)
                 {
