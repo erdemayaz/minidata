@@ -11,6 +11,8 @@ void task_drop(char* name);
 
 void task_create_entity(char* name);
 
+void task_commit();
+
 void perform(command* c);
 
 #endif

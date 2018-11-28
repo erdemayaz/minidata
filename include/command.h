@@ -11,7 +11,8 @@ typedef enum command_type
 	COMMAND_DROP,
     COMMAND_EXIT,
     COMMAND_CLOSE,
-    COMMAND_ENTITY
+    COMMAND_ENTITY,
+    COMMAND_COMMIT
 } command_type;
 
 typedef struct command
@@ -27,8 +28,6 @@ void get_command(char* buffer);
 void clear_buffer(char* buffer);
 
 void clear_command(char* buffer);
-
-void flush_command(command* c);
 
 void create_command(char* string, command* c);
 

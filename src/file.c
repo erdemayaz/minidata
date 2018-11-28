@@ -16,6 +16,19 @@ FILE* open_file(char* path)
 	return NULL;
 }
 
+FILE* open_file_write(char* path)
+{
+	if(path != NULL) 
+	{
+		FILE *f = fopen(path, "wb");
+		if(f != NULL)
+		{
+			return f;
+		}
+	}
+	return NULL;
+}
+
 char* read_file(char * path) 
 {
 	char *string = NULL;

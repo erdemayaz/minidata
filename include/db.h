@@ -21,7 +21,6 @@ typedef struct db
 {
     int id;
     char *name;
-    FILE *file;
     ENTITY **entities;
     int size;
     unsigned int list_size;
@@ -77,5 +76,7 @@ void free_entity(ENTITY* entity);
 int drop_entity(ENTITY* entity);
 
 void append_entity(ENTITY *entity);
+
+int commit();
 
 #endif

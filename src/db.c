@@ -57,7 +57,6 @@ DB* load_database(char* name)
         free(file_name);
         if(f != NULL)
         {
-            db->file = f;
             data_unit *du = NULL;
 
             du = read_data_unit(f);
@@ -72,8 +71,37 @@ DB* load_database(char* name)
             free(du->data);
             free_data_unit(du);
 
-            db->entities = NULL;
-
+            if(db->size > 0)
+            {
+                db->entities = new_entity_list(db->size);
+                int i;
+                uint8_t type;
+                uint32_t size;
+                void *buffer = (void*) malloc(BUFFER_SIZE);
+                for(i = 0; i < db->size; ++i)
+                {
+                    fread(&type, 1, 1, f);
+                    fread(&size, 4, 1, f);
+                    fread(buffer, size, 1, f);
+                    if(type == TYPE_STRING)
+                    {
+                        db->entities[i] = (ENTITY*) malloc(sizeof(ENTITY));
+                        db->entities[i]->name = string((char*) buffer, size);
+                    }
+                    else
+                    {
+                        // big problem
+                    }
+                }
+                db->list_size = db->size;
+                free(buffer);
+            }
+            else
+            {
+                db->entities = NULL;
+            }
+            
+            fclose(f);
             return db;
         }
         else
@@ -209,9 +237,40 @@ int drop_entity(ENTITY* entity)
     }
 }
 
+int commit()
+{
+    char *path_name = get_database_path(db->name);
+    FILE *f = open_file_write(path_name);
+    free(path_name);
+    if(f)
+    {
+        uint32_t size = db->size;
+        data_unit *unit = NULL;
+        unit = create_data_unit(TYPE_STRING, strlen(db->name), (void*) db->name);
+        write_data_unit(f, unit);
+        free_data_unit(unit);
+        unit = create_data_unit(TYPE_NUMBER, 4, (void*) &size);
+        write_data_unit(f, unit);
+        free_data_unit(unit);
+        if(db->size > 0)
+        {
+            int i;
+            for(i = 0; i < db->size; ++i)
+            {
+                write_string_unit(f, db->entities[i]->name);
+            }
+        }
+        fclose(f);
+        return 1;
+    }
+    else
+    {
+        free(path_name);
+        return 0;
+    }
+}
+
 void append_entity(ENTITY *entity)
 {
-    fseek(db->file, 0, SEEK_END);
-    write_string_unit(db->file, entity->name);
-    write_integer_unit(db->file, entity->size);
+    
 }

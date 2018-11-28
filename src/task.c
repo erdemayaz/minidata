@@ -13,7 +13,6 @@ void task_close(int notify)
 {
     if(db != NULL)
     {
-        close_file(db->file);
         free(db->name);
         free(db);
         db = NULL;
@@ -135,6 +134,31 @@ void task_create_entity(char* name)
     }
 }
 
+void task_commit()
+{
+    if(!commit())
+    {
+        printf("Commit failed\n");
+    }
+}
+
+void task_list_entities()
+{
+    if(db->size > 0)
+    {
+        int i;
+        for(i = 0; i < db->size; ++i)
+        {
+            printf("%10s", db->entities[i]->name);
+        }
+    }
+    else
+    {
+        printf("\n");
+    }
+    printf("\n");
+}
+
 void perform(command* c)
 {
     switch(c->type)
@@ -142,10 +166,24 @@ void perform(command* c)
         case COMMAND_DATABASE:
             if(c->word_size == 2)
             {
-                task_database(c->words[1]);
-                if(db != NULL)
+                if(strcmp(c->words[1], "ENTITIES") == 0)
                 {
-                    //printf("Connected to database\n");
+                    if(db != NULL)
+                    {
+                        task_list_entities();
+                    }
+                    else
+                    {
+                        printf("Not exist database in context\n");
+                    }
+                }
+                else
+                {
+                    task_database(c->words[1]);
+                    if(db == NULL)
+                    {
+                        printf("Connection failed\n");
+                    }
                 }
             }
             else if(c->word_size == 1)
@@ -208,6 +246,23 @@ void perform(command* c)
             
             break;
         case COMMAND_EXIT:
+            break;
+        case COMMAND_COMMIT:
+            if(c->word_size == 1)
+            {
+                if(db != NULL)
+                {
+                    task_commit();
+                }
+                else
+                {
+                    printf("Not exist database in context\n");
+                }
+            }
+            else
+            {
+                printf("'COMMIT' command takes any parameter\n");
+            }
             break;
     }
 }
