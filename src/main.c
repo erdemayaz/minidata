@@ -11,30 +11,28 @@ char *db_folder = "db/";
 
 void cli()
 {
-	char *buffer = (char*) malloc(sizeof(char) * BUFFER_SIZE);
-	char *command_text = NULL;
-	command *c = NULL;
+	char command_text[BUFFER_SIZE];
+	command c;
 	while(1)
 	{
-		command_text = get_command(buffer);
-		c = create_command(command_text);
-		if(c != NULL)
+		get_command(command_text);
+		if(command_text[0] == '\0')
+			continue;
+		create_command(command_text, &c);
+		if(c.type != -1)
 		{
-			if(c->type == COMMAND_EXIT)
+			if(c.type == COMMAND_EXIT)
 			{
 				task_close(0);
 				break;
 			}
-			perform(c);
+			perform(&c);
 		}
 		else
 		{
 			printf("Undefined command\n");
 		}
-		clear_command(command_text);
-		free_command(c);
 	}
-	free(buffer);
 }
 
 int main(int argc, char* argv[]) 

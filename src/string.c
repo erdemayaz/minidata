@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/command.h"
 
 char* string(char* array, unsigned int size)
 {
@@ -17,20 +18,16 @@ char* duplicate_string(char* origin)
     return dup;
 }
 
-char** split_string(char* string, const char delimiter, int alloc_size, int* size)
+void split_string(command *c, char* string, int* size)
 {
-    char **words = (char**) malloc(sizeof(char*) * alloc_size);
-    char *temp = duplicate_string(string);
     char *token = NULL;
     int i = 0;
-    token = strtok(temp, &delimiter);
+    token = strtok(string, " ");
     while(token != NULL)
     {
-        words[i] = duplicate_string(token);
-        token = strtok(NULL, &delimiter);
+        strcpy(c->words[i], token);
+        token = strtok(NULL, " ");
         ++i;
     }
     *size = i;
-    free(temp);
-    return words;
 }

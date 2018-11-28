@@ -53,7 +53,7 @@ void task_create_database(char* name)
     int status;
     if(create_database(name, &status))
     {
-        printf("Database created\n");
+        //printf("Database created\n");
     }
     else
     {
@@ -78,7 +78,7 @@ void task_drop(char* name)
     {
         if(drop_database(name))
         {
-            printf("Database dropped\n");
+            //printf("Database dropped\n");
         }
         else
         {
@@ -145,7 +145,7 @@ void perform(command* c)
                 task_database(c->words[1]);
                 if(db != NULL)
                 {
-                    printf("Connected to database\n");
+                    //printf("Connected to database\n");
                 }
             }
             else if(c->word_size == 1)
@@ -206,6 +206,8 @@ void perform(command* c)
             break;
         case COMMAND_ENTITY:
             
+            break;
+        case COMMAND_EXIT:
             break;
     }
 }

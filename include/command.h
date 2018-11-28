@@ -7,17 +7,9 @@
 typedef enum command_type
 {
 	COMMAND_CREATE,
-	COMMAND_READ,
-	COMMAND_UPDATE,
-	COMMAND_DELETE,
 	COMMAND_DATABASE,
 	COMMAND_DROP,
     COMMAND_EXIT,
-    COMMAND_SELECT,
-    COMMAND_LOGIN,
-    COMMAND_LOGOUT,
-    COMMAND_NEW,
-    COMMAND_REMOVE,
     COMMAND_CLOSE,
     COMMAND_ENTITY
 } command_type;
@@ -25,19 +17,19 @@ typedef enum command_type
 typedef struct command
 {
     char *text;
-    char **words;
+    char words[WORD_SIZE][BUFFER_SIZE];
     int word_size;
     command_type type;
 } command;
 
-char* get_command(char* buffer);
+void get_command(char* buffer);
 
 void clear_buffer(char* buffer);
 
 void clear_command(char* buffer);
 
-void free_command(command* c);
+void flush_command(command* c);
 
-command* create_command(char* string);
+void create_command(char* string, command* c);
 
 #endif
