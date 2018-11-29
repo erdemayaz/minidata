@@ -15,6 +15,7 @@ typedef struct entity
     FILE *file;
     RECORD **records;
     int size;
+    uint8_t commited;
 } ENTITY;
 
 typedef struct db 

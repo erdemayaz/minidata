@@ -98,7 +98,6 @@ void task_create_entity(char* name)
             db->list_size = 4;
             db->entities[0] = e;
             db->size = 1;
-            append_entity(e);
         }
         else
         {
@@ -117,7 +116,6 @@ void task_create_entity(char* name)
                 }
             }
             db->entities[db->size] = e;
-            append_entity(e);
             db->size++;
         }
     }

@@ -87,6 +87,7 @@ DB* load_database(char* name)
                     {
                         db->entities[i] = (ENTITY*) malloc(sizeof(ENTITY));
                         db->entities[i]->name = string((char*) buffer, size);
+                        db->entities[i]->commited = 1;
                     }
                     else
                     {
@@ -174,24 +175,14 @@ int drop_database(char* name)
 
 ENTITY* create_entity(char* name, int* status)
 {
-    char *file_name = get_entity_path(name);
-    FILE *f = create_file(file_name, status);
-    free(file_name);
-    if(f)
-    {
-        close_file(f);
         ENTITY *entity = (ENTITY*) malloc(sizeof(ENTITY));
         entity->file = NULL;
         entity->name = duplicate_string(name);
         entity->records = NULL;
         entity->size = 0;
+        entity->commited = 0;
         *status = 0;
         return entity;
-    }
-    else
-    {
-        return NULL;
-    }
 }
 
 ENTITY** new_entity_list(uint32_t size)
@@ -258,6 +249,24 @@ int commit()
             for(i = 0; i < db->size; ++i)
             {
                 write_string_unit(f, db->entities[i]->name);
+                if(db->entities[i]->commited == 0)
+                {
+                    int status;
+                    char *entity_name = get_entity_path(db->entities[i]->name);
+                    FILE *entity_file = create_file(entity_name, &status);
+                    free(entity_name);
+                    if(entity_file)
+                    {
+                        // you can perform other entity (initialize) operations in here
+                        fclose(entity_file);
+                    }
+                    else
+                    {
+                        // problem seems like complex
+                        // evaluate @var status
+                    }
+                    ++db->entities[i]->commited;
+                }
             }
         }
         fclose(f);
