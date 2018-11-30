@@ -13,6 +13,8 @@ void task_create_entity(char* name);
 
 void task_commit();
 
+void task_list_entities();
+
 void perform(command* c);
 
 #endif

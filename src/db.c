@@ -44,7 +44,13 @@ char* get_entity_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
     sprintf(file_name, "%s%s/%s.mnty", db_folder, db->name, name);
+    printf("-> %s\n", file_name);
     return file_name;
+}
+
+void set_entity_path(char* buffer, char* name)
+{
+    sprintf(buffer, "%s%s/%s.mnty", db_folder, db->name, name);
 }
 
 DB* load_database(char* name)
@@ -193,7 +199,7 @@ ENTITY** new_entity_list(uint32_t size)
 ENTITY** expand_entity_list(ENTITY** entities, uint32_t* size)
 {
     *size = *size + (*size / 2);
-    return (ENTITY**) realloc(entities, *size);
+    return (ENTITY**) realloc(entities, *size * (sizeof(ENTITY*)));
 }
 
 void free_entity(ENTITY* entity)
@@ -235,26 +241,20 @@ int commit()
     free(path_name);
     if(f)
     {
-        uint32_t size = db->size;
-        data_unit *unit = NULL;
-        unit = create_data_unit(TYPE_STRING, strlen(db->name), (void*) db->name);
-        write_data_unit(f, unit);
-        free_data_unit(unit);
-        unit = create_data_unit(TYPE_NUMBER, 4, (void*) &size);
-        write_data_unit(f, unit);
-        free_data_unit(unit);
+        write_string_unit(f, db->name);
+        write_unsigned_integer_unit(f, db->size);
         if(db->size > 0)
         {
             int i;
+            char entity_name[BUFFER_SIZE];
             for(i = 0; i < db->size; ++i)
             {
                 write_string_unit(f, db->entities[i]->name);
                 if(db->entities[i]->commited == 0)
                 {
                     int status;
-                    char *entity_name = get_entity_path(db->entities[i]->name);
+                    set_entity_path(entity_name, db->entities[i]->name);
                     FILE *entity_file = create_file(entity_name, &status);
-                    free(entity_name);
                     if(entity_file)
                     {
                         // you can perform other entity (initialize) operations in here

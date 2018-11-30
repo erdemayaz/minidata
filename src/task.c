@@ -5,6 +5,7 @@
 #include "../include/command.h"
 #include "../include/db.h"
 #include "../include/file.h"
+#include "../include/task.h"
 
 extern DB *db;
 extern char* db_folder;
@@ -111,22 +112,24 @@ void task_create_entity(char* name)
         }
         else
         {
+            int old_list_size = db->list_size;
             if(db->size >= db->list_size)
             {
                 ENTITY **temp = expand_entity_list(db->entities, &db->list_size);
                 if(temp != NULL)
                 {
-                    db->entities = temp;
+                    if(db->entities != temp)
+                        db->entities = temp;
                 }
                 else
                 {
                     printf("Operating system did not allocate memory, entities list could not expanded\n");
                     drop_entity(e);
+                    db->list_size = old_list_size;
                     return;
                 }
             }
-            db->entities[db->size] = e;
-            db->size++;
+            db->entities[db->size++] = e;
         }
     }
     else
@@ -157,7 +160,7 @@ void task_list_entities()
         int i;
         for(i = 0; i < db->size; ++i)
         {
-            printf("%10s", db->entities[i]->name);
+            printf("%s\n", db->entities[i]->name);
         }
     }
     else

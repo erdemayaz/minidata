@@ -28,7 +28,7 @@ void sli(char *source_name)
 				command_text[command_len - 1] = '\0';
 			if(command_text[0] == '\0')
 				continue;
-			printf("> %s\n", command_text);
+			//printf("%s\n", command_text);
 			create_command(command_text, &c);
 			if(c.type != -1)
 			{

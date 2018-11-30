@@ -13,7 +13,7 @@ char* string(char* array, unsigned int size)
 
 char* duplicate_string(char* origin)
 {
-    char *dup = (char*) malloc(sizeof(char) * strlen(origin));
+    char *dup = (char*) malloc(sizeof(char) * (strlen(origin) + 1));
     strcpy(dup, origin);
     return dup;
 }

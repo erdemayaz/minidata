@@ -27,6 +27,8 @@ void free_data_unit(data_unit* unit);
 
 void write_string_unit(FILE* file, char* string);
 
+char* read_string_unit(FILE* file);
+
 void write_unsigned_integer_unit(FILE* file, uint32_t integer);
 
 void write_integer_unit(FILE* file, int32_t integer);

@@ -58,6 +58,8 @@ char* get_database_path(char* name);
 
 char* get_entity_path(char* name);
 
+void set_entity_path(char* buffer, char* name);
+
 DB* load_database(char* name);
 
 void init_database(FILE* f, char* name);
