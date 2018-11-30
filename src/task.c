@@ -27,7 +27,17 @@ void task_close(int notify)
 void task_database(char* name)
 {
     if(db != NULL)
-        task_close(1);
+    {
+        if(strcmp(db->name, name) == 0)
+        {
+            printf("This database is also opened\n");
+            return;
+        }
+        else
+        {
+            task_close(1);
+        }
+    }
     db = load_database(name);
     if(db == NULL)
         printf("Database '%s' does not exist\n", name);
