@@ -16,6 +16,19 @@ FILE* open_file(char* path)
 	return NULL;
 }
 
+FILE* open_source_file(char * path)
+{
+	if(path != NULL) 
+	{
+		FILE *f = fopen(path, "r");
+		if(f != NULL)
+		{
+			return f;
+		}
+	}
+	return NULL;
+}
+
 FILE* open_file_write(char* path)
 {
 	if(path != NULL) 

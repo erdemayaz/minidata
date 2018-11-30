@@ -3,6 +3,8 @@
 
 FILE* open_file(char* path);
 
+FILE* open_source_file(char * path);
+
 FILE* open_file_write(char* path);
 
 char* read_file(char * path);

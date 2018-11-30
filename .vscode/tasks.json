@@ -5,7 +5,7 @@
         {
             "label": "build & run",
             "type": "shell",
-            "command": "make && ./minidata",
+            "command": "make && ./minidata first.mncd",
             "group": {
                 "kind": "build",
                 "isDefault": true

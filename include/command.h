@@ -17,7 +17,6 @@ typedef enum command_type
 
 typedef struct command
 {
-    char *text;
     char words[WORD_SIZE][BUFFER_SIZE];
     int word_size;
     command_type type;

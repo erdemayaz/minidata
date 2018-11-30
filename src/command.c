@@ -33,7 +33,6 @@ void create_command(char* string, command* c)
     int word_size = 0;
     split_string(c, string, &word_size);
     char *command_word = c->words[0];
-    c->text = string;
     c->word_size = word_size;
 
     if(strcmp(command_word, "CREATE") == 0)
