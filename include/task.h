@@ -7,7 +7,9 @@ void task_database(char* name);
 
 void task_create_database(char* name);
 
-void task_drop(char* name);
+void task_drop_database(char* name);
+
+void task_drop_entity(char* name);
 
 void task_create_entity(char* name);
 

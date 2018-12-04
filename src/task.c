@@ -78,7 +78,7 @@ void task_create_database(char* name)
     }
 }
 
-void task_drop(char* name)
+void task_drop_database(char* name)
 {
     if(db != NULL && strcmp(db->name, name) == 0)
     {
@@ -95,6 +95,11 @@ void task_drop(char* name)
             printf("Database could not drop\n");
         }
     }
+}
+
+void task_drop_entity(char* name)
+{
+    
 }
 
 void task_create_entity(char* name)
@@ -242,10 +247,25 @@ void perform(command* c)
             }
             break;
         case COMMAND_DROP:
-            if(c->word_size == 2)
-                task_drop(c->words[1]);
+            if(c->word_size == 3)
+            {
+                if(strcmp(c->words[1], "DATABASE") == 0)
+                {
+                    task_drop_database(c->words[2]);
+                }
+                else if(strcmp(c->words[1], "ENTITY") == 0)
+                {
+                    task_drop_entity(c->words[2]);
+                }
+                else
+                {
+                    printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY], name:identity)\n");
+                }
+            }
             else
-                printf("'DROP' command takes 1 parameter(name:identity)\n");
+            {
+                printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY], name:identity)\n");
+            }
             break;
         case COMMAND_CLOSE:
             if(c->word_size == 1)
