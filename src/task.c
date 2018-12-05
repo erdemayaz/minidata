@@ -99,7 +99,29 @@ void task_drop_database(char* name)
 
 void task_drop_entity(char* name)
 {
-    
+    if(db != NULL)
+    {
+        ENTITY *e = find_entity(name);
+        if(e)
+        {
+            if(drop_entity(e))
+            {
+                
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+            printf("There is no entity '%s' in database\n", name);
+        }
+    }
+    else
+    {
+        printf("Not exist database in context\n");
+    }
 }
 
 void task_create_entity(char* name)

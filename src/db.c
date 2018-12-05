@@ -44,7 +44,6 @@ char* get_entity_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
     sprintf(file_name, "%s%s/%s.mnty", db_folder, db->name, name);
-    printf("-> %s\n", file_name);
     return file_name;
 }
 
@@ -202,12 +201,38 @@ ENTITY** expand_entity_list(ENTITY** entities, uint32_t* size)
     return (ENTITY**) realloc(entities, *size * (sizeof(ENTITY*)));
 }
 
+ENTITY* find_entity(char* name)
+{
+    int i;
+    for(i = 0; i < db->size; ++i)
+    {
+        if(strcmp(db->entities[i]->name, name) == 0)
+        {
+            return db->entities[i];
+        }
+    }
+    return NULL;
+}
+
 void free_entity(ENTITY* entity)
 {
-    if(entity->file != NULL)
-        fclose(entity->file);
-    free(entity->name);
-    free(entity);
+    int i;
+    for(i = 0; i < db->size; ++i)
+    {
+        if(db->entities[i] == entity)
+        {
+            if(entity->file != NULL)
+                fclose(entity->file);
+            free(entity->name);
+            free(entity);
+            for(i = i; i + 1 < db->size; ++i)
+            {
+                db->entities[i] = db->entities[i + 1];
+            }
+            db->size--;
+            break;
+        }
+    }
 }
 
 int drop_entity(ENTITY* entity)
