@@ -70,7 +70,10 @@ char* read_file(char * path)
 void close_file(FILE* file)
 {
 	if(file != NULL)
+	{
 		fclose(file);
+		file = NULL;
+	}
 }
 
 FILE* create_file(char* name, int* status)

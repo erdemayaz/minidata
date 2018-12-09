@@ -6,10 +6,12 @@
 #include "../include/db.h"
 #include "../include/command.h"
 #include "../include/task.h"
+#include "../include/commit.h"
 
 CTX *ctx;
 DB *db;
 char *db_folder = "db/";
+commit_queue *queue;
 
 clock_t begin, end;
 
@@ -84,6 +86,8 @@ int main(int argc, char* argv[])
 {
 	ctx = init_ctx();
 	db = NULL;
+	queue = create_commit_queue();
+
 	if(argc == 1)
 	{
 		cli();
@@ -99,6 +103,8 @@ int main(int argc, char* argv[])
 	{
 		printf("Program can takes 1 optional parameter\n");
 	}
+	
+	free_commit_queue(queue);
 	destroy_ctx(ctx);
 	return 0;
 }

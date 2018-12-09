@@ -6,6 +6,7 @@
 #include "../include/db.h"
 #include "../include/file.h"
 #include "../include/task.h"
+#include "../include/commit.h"
 
 extern DB *db;
 extern char* db_folder;
@@ -104,18 +105,18 @@ void task_drop_entity(char* name)
         ENTITY *e = find_entity(name);
         if(e)
         {
-            if(drop_entity(e))
+            if(free_entity(e))
             {
-                
+                enqueue_commit(create_commit(COMMIT_DROP_ENTITY, name));
             }
             else
             {
-
+                printf("Entity '%s' could not dropped\n", name);
             }
         }
         else
         {
-            printf("There is no entity '%s' in database\n", name);
+            printf("There is no entity in database as '%s'\n", name);
         }
     }
     else

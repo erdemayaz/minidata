@@ -76,7 +76,7 @@ ENTITY** expand_entity_list(ENTITY** entities, uint32_t* size);
 
 ENTITY* find_entity(char* name);
 
-void free_entity(ENTITY* entity);
+int free_entity(ENTITY* entity);
 
 int drop_entity(ENTITY* entity);
 

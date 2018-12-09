@@ -7,9 +7,11 @@
 #include "../include/db.h"
 #include "../include/string.h"
 #include "../include/data.h"
+#include "../include/commit.h"
 
 extern char *db_folder;
 extern DB *db;
+extern commit_queue *queue;
 
 CTX* init_ctx()
 {
@@ -92,6 +94,7 @@ DB* load_database(char* name)
                     {
                         db->entities[i] = (ENTITY*) malloc(sizeof(ENTITY));
                         db->entities[i]->name = string((char*) buffer, size);
+                        db->entities[i]->file = NULL;
                         db->entities[i]->commited = 1;
                     }
                     else
@@ -214,9 +217,10 @@ ENTITY* find_entity(char* name)
     return NULL;
 }
 
-void free_entity(ENTITY* entity)
+int free_entity(ENTITY* entity)
 {
     int i;
+    int res = 0;
     for(i = 0; i < db->size; ++i)
     {
         if(db->entities[i] == entity)
@@ -230,9 +234,11 @@ void free_entity(ENTITY* entity)
                 db->entities[i] = db->entities[i + 1];
             }
             db->size--;
+            res++;
             break;
         }
     }
+    return res;
 }
 
 int drop_entity(ENTITY* entity)
@@ -243,7 +249,6 @@ int drop_entity(ENTITY* entity)
         if(remove(file_name) == 0)
         {
             free(file_name);
-            free_entity(entity);
             return 1;
         }
         else
@@ -266,11 +271,11 @@ int commit()
     free(path_name);
     if(f)
     {
+        int i;
         write_string_unit(f, db->name);
         write_unsigned_integer_unit(f, db->size);
         if(db->size > 0)
         {
-            int i;
             char entity_name[BUFFER_SIZE];
             for(i = 0; i < db->size; ++i)
             {
@@ -290,10 +295,36 @@ int commit()
                         // problem seems like complex
                         // evaluate @var status
                     }
-                    ++db->entities[i]->commited;
+                    db->entities[i]->commited++;
                 }
             }
         }
+
+        char buffer[BUFFER_SIZE];
+        commit_t *c = NULL;
+        while(queue->size > 0)
+        {
+            c = dequeue_commit();
+            if(c != NULL)
+            {
+                if(c->type == COMMIT_DROP_ENTITY)
+                {
+                    set_entity_path(buffer, c->object_name);
+                    remove(buffer);
+                }
+
+                if(c->object_name)
+                    free(c->object_name);
+                free(c);
+                c = NULL;
+            }
+            else
+            {
+                // queue operation problem
+                printf("dequeued commit is null\n");
+            }
+        }
+
         fclose(f);
         return 1;
     }
