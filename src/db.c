@@ -12,6 +12,7 @@
 extern char *db_folder;
 extern DB *db;
 extern commit_queue *queue;
+char register_string[BUFFER_SIZE];
 
 CTX* init_ctx()
 {
@@ -35,11 +36,21 @@ char* get_database_dir(char* name)
     return file_name;
 }
 
+void set_database_dir(char* buffer, char* name)
+{
+    sprintf(buffer, "%s%s/", db_folder, name);
+}
+
 char* get_database_path(char* name)
 {
     char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
     sprintf(file_name, "%s%s/%s.mndt", db_folder, name, name);
     return file_name;
+}
+
+void set_database_path(char* buffer, char* name)
+{
+    sprintf(buffer, "%s%s/%s.mndt", db_folder, name, name);
 }
 
 char* get_entity_path(char* name)
@@ -141,9 +152,8 @@ void init_database(FILE* f, char* name)
 
 int create_database(char* name, int* status)
 {
-    char *file_name = get_database_path(name);
-    FILE *f = create_file(file_name, status);
-    free(file_name);
+    set_database_path(register_string, name);
+    FILE *f = create_file(register_string, status);
     if(f)
     {
         *status = 0;
@@ -157,26 +167,22 @@ int create_database(char* name, int* status)
 
 int drop_database(char* name)
 {
-    char *file_name = get_database_path(name);
-    if(exist_file(file_name))
+    set_database_path(register_string, name);
+    if(exist_file(register_string))
     {
-        if(remove(file_name) == 0)
+        if(remove(register_string) == 0)
         {
-            free(file_name);
-            char *dir = get_database_dir(name);
-            rmdir(dir);
-            free(dir);
+            set_database_dir(register_string, name);
+            rmdir(register_string);
             return 1;
         }
         else
         {
-            free(file_name);
             return 0;
         }
     }
     else
     {
-        free(file_name);
         return 0;
     }
 }
@@ -266,9 +272,8 @@ int drop_entity(ENTITY* entity)
 
 int commit()
 {
-    char *path_name = get_database_path(db->name);
-    FILE *f = open_file_write(path_name);
-    free(path_name);
+    set_database_path(register_string, db->name);
+    FILE *f = open_file_write(register_string);
     if(f)
     {
         int i;
@@ -330,7 +335,6 @@ int commit()
     }
     else
     {
-        free(path_name);
         return 0;
     }
 }

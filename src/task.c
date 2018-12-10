@@ -10,6 +10,7 @@
 
 extern DB *db;
 extern char* db_folder;
+extern char register_string[BUFFER_SIZE];
 
 void task_close(int notify)
 {
@@ -53,13 +54,12 @@ void task_create_database(char* name)
         return;
     }
 
-    char *db_dir = get_database_dir(name);
-    if(!exist_dir(db_dir) && mkdir(db_dir))
+    set_database_dir(register_string, name);
+    if(!exist_dir(register_string) && mkdir(register_string))
     {
-        printf("'%s' folder could not created\n", db_dir);
+        printf("'%s' folder could not created\n", register_string);
         return;
     }
-    free(db_dir);
 
     int status;
     if(create_database(name, &status))
@@ -301,7 +301,11 @@ void perform(command* c)
             break;
         case COMMAND_EXIT:
             break;
-        case COMMAND_COMMIT:
+        case COMMAND_UNDEFINED:
+            break;
+        case COMMAND_BUFFER_OVERFLOW:
+            break;
+        case COMMAND_COMMIT: 
             if(c->word_size == 1)
             {
                 if(db != NULL)

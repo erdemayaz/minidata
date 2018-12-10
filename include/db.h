@@ -54,7 +54,11 @@ void destroy_ctx(CTX* c);
 
 char* get_database_dir(char* name);
 
+void set_database_dir(char* buffer, char* name);
+
 char* get_database_path(char* name);
+
+void set_database_path(char* buffer, char* name);
 
 char* get_entity_path(char* name);
 
