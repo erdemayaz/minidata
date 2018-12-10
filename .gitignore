@@ -2,9 +2,7 @@
 .vscode/launch.json
 .vscode/settings.json
 .build/
-.test/
 .db/
 *.o
 *.mndt
 *.mnty
-*.mncd

@@ -32,6 +32,7 @@ commit.o: src/commit.c
 
 test: clean all
 	minidata test/db_test.mncd
+	minidata test/entity_test.mncd
 
 clean:
 	rm -f *.o minidata
