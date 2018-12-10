@@ -3,17 +3,17 @@
 
 #include <stdint.h>
 
-typedef struct record
+typedef struct field
 {
     char *content;
     int size;
-} RECORD;
+} FIELD;
 
 typedef struct entity
 {
     char *name;
     FILE *file;
-    RECORD **records;
+    FIELD **fields;
     int size;
     uint8_t commited;
 } ENTITY;
@@ -29,17 +29,17 @@ typedef struct db
 
 typedef enum context_t
 {
-    CTX_TERMINAL,
+    CTX_HOST,
     CTX_DATABASE,
     CTX_ENTITY,
-    CTX_RECORD
+    CTX_FIELD
 } context_t;
 
 typedef union context_o
 {
     DB *db;
     ENTITY *ent;
-    RECORD *rec;
+    FIELD *fld;
 } context_o;
 
 typedef struct context
@@ -51,6 +51,18 @@ typedef struct context
 CTX* init_ctx();
 
 void destroy_ctx(CTX* c);
+
+void set_ctx_host();
+
+void set_ctx_db();
+
+void set_ctx_entity(ENTITY *entity);
+
+void set_ctx_field(FIELD *field);
+
+context_t get_ctx_type();
+
+context_o get_ctx_object();
 
 char* get_database_dir(char* name);
 

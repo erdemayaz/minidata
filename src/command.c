@@ -72,6 +72,10 @@ void create_command(char* string, command* c)
     {
         c->type = COMMAND_CLOSE;
     } 
+    else if(strcmp(command_word, "CONTEXT") == 0)
+    {
+        c->type = COMMAND_CONTEXT;
+    }
     else 
     {
         c->type = COMMAND_UNDEFINED;

@@ -11,6 +11,7 @@
 extern DB *db;
 extern char* db_folder;
 extern char register_string[BUFFER_SIZE];
+extern CTX *ctx;
 
 void task_close(int notify)
 {
@@ -19,6 +20,7 @@ void task_close(int notify)
         free(db->name);
         free(db);
         db = NULL;
+        set_ctx_host();
     }
     else
     {
@@ -43,7 +45,13 @@ void task_database(char* name)
     }
     db = load_database(name);
     if(db == NULL)
+    {
         printf("Database '%s' does not exist\n", name);
+    } 
+    else
+    {
+        set_ctx_db();
+    }
 }
 
 void task_create_database(char* name)
@@ -259,6 +267,18 @@ void perform(command* c)
                         printf("Not exist database in context\n");
                     }
                 }
+                else if(strcmp(c->words[1], "FIELD") == 0)
+                {
+                    if(db != NULL)
+                    {
+                        
+                        // create field
+                    }
+                    else
+                    {
+                        printf("Not exist database in context\n");
+                    }
+                }
                 else
                 {
                     printf("'%s' is undefined type\n", c->words[1]);
@@ -266,7 +286,7 @@ void perform(command* c)
             }
             else
             {
-                printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY], name:identity)\n");
+                printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
             }
             break;
         case COMMAND_DROP:
@@ -297,7 +317,47 @@ void perform(command* c)
                 printf("'CLOSE' command takes any parameter\n");
             break;
         case COMMAND_ENTITY:
-            
+            if(db != NULL)
+            {
+                if(c->word_size == 2)
+                {
+                    if(strcmp(c->words[1], "FIELDS") == 0)
+                    {
+
+                    }
+                    else if(strcmp(c->words[1], "COUNT") == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        ENTITY *e = find_entity(c->words[1]);
+                        if(e)
+                        {
+                            set_ctx_entity(e);
+                        }
+                        else
+                        {
+                            printf("There is not entity '%s' in database\n", c->words[1]);
+                        }
+                    }
+                }
+                else
+                {
+                    if(ctx->type == CTX_ENTITY)
+                    {
+                        printf("<%s, %d fields\n", ctx->object.ent->name, ctx->object.ent->size);
+                    }
+                    else
+                    {
+                        printf("Not exist entity in context\n");
+                    }
+                }
+            }
+            else
+            {
+                printf("Not exist database in context\n");
+            }
             break;
         case COMMAND_EXIT:
             break;
@@ -320,6 +380,29 @@ void perform(command* c)
             else
             {
                 printf("'COMMIT' command takes any parameter\n");
+            }
+            break;
+        case COMMAND_CONTEXT:
+            if(c->word_size == 1)
+            {
+                context_t type = get_ctx_type();
+                switch(type)
+                {
+                    case CTX_HOST:
+                        printf("<host>\n");
+                        break;
+                    case CTX_DATABASE:
+                        printf("<database, %s>\n", db->name);
+                        break;
+                    case CTX_ENTITY:
+                        break;
+                    case CTX_FIELD:
+                        break;
+                }
+            }
+            else
+            {
+                printf("'CONTEXT' command takes any parameter\n");
             }
             break;
     }

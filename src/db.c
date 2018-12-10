@@ -12,12 +12,13 @@
 extern char *db_folder;
 extern DB *db;
 extern commit_queue *queue;
+extern CTX *ctx;
 char register_string[BUFFER_SIZE];
 
 CTX* init_ctx()
 {
     CTX *c = (CTX*) malloc(sizeof(CTX));
-    c->type = CTX_TERMINAL;
+    c->type = CTX_HOST;
     return c;
 }
 
@@ -27,6 +28,39 @@ void destroy_ctx(CTX* c)
     {
         free(c);
     }
+}
+
+void set_ctx_host()
+{
+    ctx->type = CTX_HOST;
+}
+
+void set_ctx_db()
+{
+    ctx->type = CTX_DATABASE;
+    ctx->object.db = db;
+}
+
+void set_ctx_entity(ENTITY *entity)
+{
+    ctx->type = CTX_ENTITY;
+    ctx->object.ent = entity;
+}
+
+void set_ctx_field(FIELD *field)
+{
+    ctx->type = CTX_FIELD;
+    ctx->object.fld = field;
+}
+
+context_t get_ctx_type()
+{
+    return ctx->type;
+}
+
+context_o get_ctx_object()
+{
+    return ctx->object;
 }
 
 char* get_database_dir(char* name)
@@ -192,7 +226,7 @@ ENTITY* create_entity(char* name, int* status)
         ENTITY *entity = (ENTITY*) malloc(sizeof(ENTITY));
         entity->file = NULL;
         entity->name = duplicate_string(name);
-        entity->records = NULL;
+        entity->fields = NULL;
         entity->size = 0;
         entity->commited = 0;
         *status = 0;
