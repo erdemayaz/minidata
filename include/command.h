@@ -12,7 +12,9 @@ typedef enum command_type
     COMMAND_EXIT,
     COMMAND_CLOSE,
     COMMAND_ENTITY,
-    COMMAND_COMMIT
+    COMMAND_COMMIT,
+    COMMAND_UNDEFINED,
+    COMMAND_BUFFER_OVERFLOW
 } command_type;
 
 typedef struct command

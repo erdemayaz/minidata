@@ -25,6 +25,11 @@ void split_string(command *c, char* string, int* size)
     token = strtok(string, " ");
     while(token != NULL)
     {
+        if(i >= WORD_SIZE)
+        {
+            *size = i + 1;
+            return;
+        }
         strcpy(c->words[i], token);
         token = strtok(NULL, " ");
         ++i;

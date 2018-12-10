@@ -34,6 +34,11 @@ void create_command(char* string, command* c)
     split_string(c, string, &word_size);
     char *command_word = c->words[0];
     c->word_size = word_size;
+    if(word_size > WORD_SIZE)
+    {
+        c->type = COMMAND_BUFFER_OVERFLOW;
+        return;
+    }
 
     if(strcmp(command_word, "CREATE") == 0)
     {
@@ -69,6 +74,6 @@ void create_command(char* string, command* c)
     } 
     else 
     {
-        c->type = -1;
+        c->type = COMMAND_UNDEFINED;
     }
 }

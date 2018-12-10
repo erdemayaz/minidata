@@ -30,9 +30,16 @@ void sli(char *source_name)
 				command_text[command_len - 1] = '\0';
 			if(command_text[0] == '\0')
 				continue;
-			//printf("%s\n", command_text);
 			create_command(command_text, &c);
-			if(c.type != -1)
+			if(c.type == COMMAND_UNDEFINED)
+			{
+				printf("Undefined command\n");
+			}
+			else if(c.type == COMMAND_BUFFER_OVERFLOW)
+			{
+				printf("Command buffer overflow\n");
+			}
+			else
 			{
 				if(c.type == COMMAND_EXIT)
 				{
@@ -40,10 +47,6 @@ void sli(char *source_name)
 					break;
 				}
 				perform(&c);
-			}
-			else
-			{
-				printf("Undefined command\n");
 			}
 		}
 		fclose(f);
@@ -65,7 +68,15 @@ void cli()
 		if(command_text[0] == '\0')
 			continue;
 		create_command(command_text, &c);
-		if(c.type != -1)
+		if(c.type == COMMAND_UNDEFINED)
+		{
+			printf("Undefined command\n");
+		}
+		else if(c.type == COMMAND_BUFFER_OVERFLOW)
+		{
+			printf("Command buffer overflow\n");
+		}
+		else
 		{
 			if(c.type == COMMAND_EXIT)
 			{
@@ -73,10 +84,6 @@ void cli()
 				break;
 			}
 			perform(&c);
-		}
-		else
-		{
-			printf("Undefined command\n");
 		}
 		end = clock();
 	}
