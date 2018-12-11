@@ -17,6 +17,8 @@ void task_commit();
 
 void task_list_entities();
 
+void task_create_field(char *name);
+
 void perform(command* c);
 
 #endif

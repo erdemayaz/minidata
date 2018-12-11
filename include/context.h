@@ -38,4 +38,6 @@ context_t get_ctx_type();
 
 context_o get_ctx_object();
 
+void context_up();
+
 #endif

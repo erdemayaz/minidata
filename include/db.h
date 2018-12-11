@@ -2,11 +2,14 @@
 #define _DB_H_
 
 #include <stdint.h>
+#include "../include/data.h"
 
 typedef struct field
 {
-    char *content;
-    int size;
+    data_t type;
+    char *name;
+    uint32_t size;
+    uint8_t committed;
 } FIELD;
 
 typedef struct entity
@@ -14,8 +17,9 @@ typedef struct entity
     char *name;
     FILE *file;
     FIELD **fields;
-    int size;
-    uint8_t commited;
+    uint32_t size;
+    uint32_t list_size;
+    uint8_t committed;
 } ENTITY;
 
 typedef struct db 
@@ -62,5 +66,15 @@ int drop_entity(ENTITY* entity);
 void append_entity(ENTITY *entity);
 
 int commit();
+
+FIELD* create_field(char* name, data_t type, uint32_t size, int* status);
+
+FIELD** new_field_list(uint32_t size);
+
+FIELD** expand_field_list(FIELD** fields, uint32_t* size);
+
+FIELD* find_field(char* name);
+
+void free_field(FIELD *field);
 
 #endif

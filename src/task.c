@@ -207,6 +207,55 @@ void task_list_entities()
     printf("\n");
 }
 
+void task_create_field(char *name)
+{
+    int status;
+    FIELD *f = create_field(name, TYPE_NULL, 32, &status);
+    if(f)
+    {
+        ENTITY *e = ctx->object.ent;
+        if(e->fields == NULL)
+        {
+            e->fields = new_field_list(4);
+            e->list_size = 4;
+            e->fields[0] = f;
+            e->size = 1;
+        }
+        else
+        {
+            int old_list_size = e->list_size;
+            if(e->size >= e->list_size)
+            {
+                FIELD **temp = expand_field_list(e->fields, &e->list_size);
+                if(temp != NULL)
+                {
+                    if(e->fields != temp)
+                        e->fields = temp;
+                }
+                else
+                {
+                    printf("Operating system did not allocate memory, field list could not expanded\n");
+                    free_field(f);
+                    e->list_size = old_list_size;
+                    return;
+                }
+            }
+            e->fields[e->size++] = f;
+        }
+    }
+    else
+    {
+        if(status == 1)
+        {
+            printf("Already exists a entity in database with this name\n");
+        }
+        else if(status == 2)
+        {
+            printf("Entity file could not created\n");
+        }
+    }
+}
+
 void perform(command* c)
 {
     switch(c->type)
@@ -272,8 +321,14 @@ void perform(command* c)
                 {
                     if(db != NULL)
                     {
-                        
-                        // create field
+                        if(ctx->type == CTX_ENTITY)
+                        {
+                            task_create_field(c->words[2]);
+                        }
+                        else
+                        {
+                            printf("Not exist entity in context\n");
+                        }
                     }
                     else
                     {
@@ -410,7 +465,7 @@ void perform(command* c)
             {
                 if(strcmp(c->words[1], "UP") == 0)
                 {
-
+                    context_up();
                 }
                 else
                 {

@@ -94,7 +94,9 @@ DB* load_database(char* name)
                         db->entities[i] = (ENTITY*) malloc(sizeof(ENTITY));
                         db->entities[i]->name = string((char*) buffer, size);
                         db->entities[i]->file = NULL;
-                        db->entities[i]->commited = 1;
+                        db->entities[i]->fields = NULL;
+                        db->entities[i]->list_size = 0;
+                        db->entities[i]->committed = 1;
                     }
                     else
                     {
@@ -182,7 +184,7 @@ ENTITY* create_entity(char* name, int* status)
         entity->name = duplicate_string(name);
         entity->fields = NULL;
         entity->size = 0;
-        entity->commited = 0;
+        entity->committed = 0;
         *status = 0;
         return entity;
 }
@@ -273,7 +275,7 @@ int commit()
             for(i = 0; i < db->size; ++i)
             {
                 write_string_unit(f, db->entities[i]->name);
-                if(db->entities[i]->commited == 0)
+                if(db->entities[i]->committed == 0)
                 {
                     int status;
                     set_entity_path(entity_name, db->entities[i]->name);
@@ -288,7 +290,7 @@ int commit()
                         // problem seems like complex
                         // evaluate @var status
                     }
-                    db->entities[i]->commited++;
+                    db->entities[i]->committed++;
                 }
             }
         }
@@ -330,4 +332,39 @@ int commit()
 void append_entity(ENTITY *entity)
 {
     
+}
+
+FIELD* create_field(char* name, data_t type, uint32_t size, int* status)
+{
+        FIELD *field = (FIELD*) malloc(sizeof(FIELD));
+        field->type = type;
+        field->name = duplicate_string(name);
+        field->size = size;
+        field->committed = 0;
+        *status = 0;
+        return field;
+}
+
+FIELD** new_field_list(uint32_t size)
+{
+    return (FIELD**) malloc(sizeof(FIELD*) * size);
+}
+
+FIELD** expand_field_list(FIELD** fields, uint32_t* size)
+{
+    *size = *size + (*size / 2);
+    return (FIELD**) realloc(fields, *size * (sizeof(FIELD*)));
+}
+
+FIELD* find_field(char* name)
+{
+    return NULL;
+}
+
+void free_field(FIELD *field)
+{
+    if(field->name)
+        free(field->name);
+    free(field);
+    field = NULL;
 }

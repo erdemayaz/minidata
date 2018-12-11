@@ -7,7 +7,8 @@ typedef enum data
     TYPE_BOOLEAN    = 1,
     TYPE_NUMBER     = 2,
     TYPE_STRING     = 3,
-    TYPE_DATA_UNIT  = 4
+    TYPE_OBJECT     = 4,
+    TYPE_ARRAY      = 5,
 } data_t;
 
 typedef struct data_unit

@@ -53,3 +53,21 @@ context_o get_ctx_object()
 {
     return ctx->object;
 }
+
+void context_up()
+{
+    switch(ctx->type)
+    {
+        case CTX_HOST:
+            break;
+        case CTX_DATABASE:
+            break;
+        case CTX_ENTITY:
+            ctx->type = CTX_DATABASE;
+            ctx->object.db = db;
+            break;
+        case CTX_FIELD:
+
+            break;
+    }
+}
