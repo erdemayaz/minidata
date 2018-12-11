@@ -8,6 +8,7 @@
 #include "../include/task.h"
 #include "../include/commit.h"
 #include "../include/context.h"
+#include "../include/string.h"
 
 extern DB *db;
 extern char* db_folder;
@@ -207,10 +208,10 @@ void task_list_entities()
     printf("\n");
 }
 
-void task_create_field(char *name)
+void task_create_field(char *name, data_t type, uint32_t size)
 {
     int status;
-    FIELD *f = create_field(name, TYPE_NULL, 32, &status);
+    FIELD *f = create_field(name, type, size, &status);
     if(f)
     {
         ENTITY *e = ctx->object.ent;
@@ -300,7 +301,77 @@ void perform(command* c)
             }
             break;
         case COMMAND_CREATE:
-            if(c->word_size == 3)
+            if(c->word_size == 5)
+            {
+                if(strcmp(c->words[1], "FIELD") == 0)
+                {
+                    if(db != NULL)
+                    {
+                        if(ctx->type == CTX_ENTITY)
+                        {
+                            data_t type;
+                            if(strcmp(c->words[2], "STRING") == 0)
+                            {
+                                type = TYPE_STRING;
+                            }
+                            else if(strcmp(c->words[2], "NUMBER") == 0)
+                            {
+                                type = TYPE_NUMBER;
+                            }
+                            else if(strcmp(c->words[2], "OBJECT") == 0)
+                            {
+                                type = TYPE_OBJECT;
+                            }
+                            else if(strcmp(c->words[2], "ARRAY") == 0)
+                            {
+                                type = TYPE_ARRAY;
+                            }
+                            else if(strcmp(c->words[2], "BOOLEAN") == 0)
+                            {
+                                type = TYPE_BOOLEAN;
+                            }
+                            else if(strcmp(c->words[2], "NULL") == 0)
+                            {
+                                type = TYPE_NULL;
+                            }
+                            else
+                            {
+                                printf("'%s' is undefined data type\n", c->words[2]);
+                                return;
+                            }
+                            int status;
+                            int size = string_to_integer(c->words[3], &status);
+                            if(status == 0)
+                            {
+                                if(size < 0)
+                                {
+                                    printf("Incorrect input for size\n");
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                printf("Incorrect input for size\n");
+                                return;
+                            }
+                            task_create_field(c->words[2], type, (uint32_t) size);
+                        }
+                        else
+                        {
+                            printf("Not exist entity in context\n");
+                        }
+                    }
+                    else
+                    {
+                        printf("Not exist database in context\n");
+                    }
+                }
+                else
+                {
+                    printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
+                }
+            }
+            else if(c->word_size == 3)
             {
                 if(strcmp(c->words[1], "DATABASE") == 0)
                 {
@@ -311,24 +382,6 @@ void perform(command* c)
                     if(db != NULL)
                     {
                         task_create_entity(c->words[2]);
-                    }
-                    else
-                    {
-                        printf("Not exist database in context\n");
-                    }
-                }
-                else if(strcmp(c->words[1], "FIELD") == 0)
-                {
-                    if(db != NULL)
-                    {
-                        if(ctx->type == CTX_ENTITY)
-                        {
-                            task_create_field(c->words[2]);
-                        }
-                        else
-                        {
-                            printf("Not exist entity in context\n");
-                        }
                     }
                     else
                     {

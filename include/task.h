@@ -17,7 +17,7 @@ void task_commit();
 
 void task_list_entities();
 
-void task_create_field(char *name);
+void task_create_field(char *name, data_t type, uint32_t size);
 
 void perform(command* c);
 
