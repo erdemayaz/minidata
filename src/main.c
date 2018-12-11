@@ -7,6 +7,7 @@
 #include "../include/command.h"
 #include "../include/task.h"
 #include "../include/commit.h"
+#include "../include/context.h"
 
 CTX *ctx;
 DB *db;

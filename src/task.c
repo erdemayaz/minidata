@@ -7,6 +7,7 @@
 #include "../include/file.h"
 #include "../include/task.h"
 #include "../include/commit.h"
+#include "../include/context.h"
 
 extern DB *db;
 extern char* db_folder;
@@ -327,7 +328,7 @@ void perform(command* c)
                     }
                     else if(strcmp(c->words[1], "COUNT") == 0)
                     {
-
+                        printf("<%d entities>\n", db->size);
                     }
                     else
                     {
@@ -342,7 +343,7 @@ void perform(command* c)
                         }
                     }
                 }
-                else
+                else if(c->word_size == 1)
                 {
                     if(ctx->type == CTX_ENTITY)
                     {
@@ -352,6 +353,10 @@ void perform(command* c)
                     {
                         printf("Not exist entity in context\n");
                     }
+                }
+                else
+                {
+                    printf("'ENTITY' command takes 1 optional parameter(name:identity)\n");
                 }
             }
             else
@@ -395,14 +400,26 @@ void perform(command* c)
                         printf("<database, %s>\n", db->name);
                         break;
                     case CTX_ENTITY:
+                        printf("<entity, %s>\n", ctx->object.ent->name);
                         break;
                     case CTX_FIELD:
                         break;
                 }
             }
+            else if(c->word_size == 2)
+            {
+                if(strcmp(c->words[1], "UP") == 0)
+                {
+
+                }
+                else
+                {
+                    printf("'CONTEXT' command takes 1 optional parameter(type:[UP])\n");
+                }
+            }
             else
             {
-                printf("'CONTEXT' command takes any parameter\n");
+                printf("'CONTEXT' command takes 1 optional parameter(type:[UP])\n");
             }
             break;
     }
