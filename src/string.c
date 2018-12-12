@@ -45,19 +45,19 @@ int string_to_integer(char *sequence, int *status)
     long number = 0;
     errno = 0;
     number = strtol(sequence, &end, 10);
-    if(sequence == end)
+    if(sequence == end) // no digits found
         *status = 2;
-    else if(errno == ERANGE && number == LONG_MIN)
+    else if(errno == ERANGE && number == LONG_MIN) // underflow occurred
         *status = 3;
-    else if(errno == ERANGE && number == LONG_MAX)
+    else if(errno == ERANGE && number == LONG_MAX) // overflow occurred
         *status = 4;
-    else if(errno == EINVAL) /* not in all c99 implementations - gcc OK */
+    else if(errno == EINVAL) /* not in all c99 implementations - gcc OK */ // base contains unsupported value
         *status = 5;
-    else if(errno != 0 && number == 0)
+    else if(errno != 0 && number == 0) // unspecified error occurred
         *status = 6;
-    else if(errno == 0 && sequence && !*end)
+    else if(errno == 0 && sequence && !*end) // represents all characters read (OK!)
         *status = 0;
-    else if(errno == 0 && sequence && *end != 0)
+    else if(errno == 0 && sequence && *end != 0) // additional characters remain
         *status = 1;
     if(number >= INT_MIN && number <= INT_MAX)
     {

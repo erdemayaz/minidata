@@ -242,6 +242,7 @@ void task_create_field(char *name, data_t type, uint32_t size)
                 }
             }
             e->fields[e->size++] = f;
+            e->committed = 0;
         }
     }
     else
@@ -455,7 +456,7 @@ void perform(command* c)
                 {
                     if(ctx->type == CTX_ENTITY)
                     {
-                        printf("<%s, %d fields\n", ctx->object.ent->name, ctx->object.ent->size);
+                        printf("<%s, %d fields>\n", ctx->object.ent->name, ctx->object.ent->size);
                     }
                     else
                     {
