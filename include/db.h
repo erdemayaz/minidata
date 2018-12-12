@@ -28,7 +28,8 @@ typedef struct db
     char *name;
     ENTITY **entities;
     int size;
-    unsigned int list_size;
+    uint32_t list_size;
+    uint8_t committed;
 } DB;
 
 char* get_database_dir(char* name);
@@ -42,6 +43,10 @@ void set_database_path(char* buffer, char* name);
 char* get_entity_path(char* name);
 
 void set_entity_path(char* buffer, char* name);
+
+char* get_field_path(char* name);
+
+void set_field_path(char* buffer, char* name);
 
 DB* load_database(char* name);
 
@@ -64,6 +69,12 @@ int free_entity(ENTITY* entity);
 int drop_entity(ENTITY* entity);
 
 void append_entity(ENTITY *entity);
+
+int commit_db();
+
+int commit_entity(ENTITY *entity);
+
+int commit_field(FIELD *field);
 
 int commit();
 

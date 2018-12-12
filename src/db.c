@@ -53,6 +53,18 @@ void set_entity_path(char* buffer, char* name)
     sprintf(buffer, "%s%s/%s.mnty", db_folder, db->name, name);
 }
 
+char* get_field_path(char* name)
+{
+    char *file_name = (char*) malloc(sizeof(char) * (strlen(name) * 2 + strlen(db_folder) + 6));
+    sprintf(file_name, "%s%s/%s.mnfd", db_folder, db->name, name);
+    return file_name;
+}
+
+void set_field_path(char* buffer, char* name)
+{
+    sprintf(buffer, "%s%s/%s.mnfd", db_folder, db->name, name);
+}
+
 DB* load_database(char* name)
 {
     DB *db = (DB*) malloc(sizeof(DB));
@@ -76,6 +88,8 @@ DB* load_database(char* name)
             db->size = *temp;
             free(du->data);
             free_data_unit(du);
+
+            db->committed = 1;
 
             if(db->size > 0)
             {
@@ -109,6 +123,7 @@ DB* load_database(char* name)
             else
             {
                 db->entities = NULL;
+                db->list_size = 0;
             }
             
             fclose(f);
@@ -260,7 +275,7 @@ int drop_entity(ENTITY* entity)
     }
 }
 
-int commit()
+int commit_db()
 {
     set_database_path(register_string, db->name);
     FILE *f = open_file_write(register_string);
@@ -271,55 +286,10 @@ int commit()
         write_unsigned_integer_unit(f, db->size);
         if(db->size > 0)
         {
-            char entity_name[BUFFER_SIZE];
             for(i = 0; i < db->size; ++i)
-            {
                 write_string_unit(f, db->entities[i]->name);
-                if(db->entities[i]->committed == 0)
-                {
-                    int status;
-                    set_entity_path(entity_name, db->entities[i]->name);
-                    FILE *entity_file = create_file(entity_name, &status);
-                    if(entity_file)
-                    {
-                        // you can perform other entity (initialize) operations in here
-                        fclose(entity_file);
-                    }
-                    else
-                    {
-                        // problem seems like complex
-                        // evaluate @var status
-                    }
-                    db->entities[i]->committed++;
-                }
-            }
         }
-
-        char buffer[BUFFER_SIZE];
-        commit_t *c = NULL;
-        while(queue->size > 0)
-        {
-            c = dequeue_commit();
-            if(c != NULL)
-            {
-                if(c->type == COMMIT_DROP_ENTITY)
-                {
-                    set_entity_path(buffer, c->object_name);
-                    remove(buffer);
-                }
-
-                if(c->object_name)
-                    free(c->object_name);
-                free(c);
-                c = NULL;
-            }
-            else
-            {
-                // queue operation problem
-                printf("dequeued commit is null\n");
-            }
-        }
-
+        db->committed = 1;
         fclose(f);
         return 1;
     }
@@ -327,6 +297,84 @@ int commit()
     {
         return 0;
     }
+}
+
+int commit_entity(ENTITY *entity)
+{
+    set_entity_path(register_string, entity->name);
+    FILE *f = open_file_write(register_string);
+    if(f)
+    {
+        int i;
+        write_string_unit(f, entity->name);
+        write_unsigned_integer_unit(f, entity->size);
+        if(entity->size > 0)
+        {
+            for(i = 0; i < entity->size; ++i)
+                write_string_unit(f, entity->fields[i]->name);
+        }
+        entity->committed = 1;
+        fclose(f);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int commit_field(FIELD *field)
+{
+    set_field_path(register_string, field->name);
+    return 0;
+}
+
+int commit()
+{
+    int i;
+    if(db->committed == 0)
+    {
+        if(commit_db() == 0)
+        {
+            return 0;
+        }
+    }
+        
+    for(i = 0; i < db->size; ++i)
+    {
+        if(db->entities[i]->committed == 0)
+        {
+            if(commit_entity(db->entities[i]) == 0)
+            {
+                return 0;
+            }
+        }
+    }
+
+    char buffer[BUFFER_SIZE];
+    commit_t *c = NULL;
+    while(queue->size > 0)
+    {
+        c = dequeue_commit();
+        if(c != NULL)
+        {
+            if(c->type == COMMIT_DROP_ENTITY)
+            {
+                set_entity_path(buffer, c->object_name);
+                remove(buffer);
+            }
+            if(c->object_name)
+                free(c->object_name);
+            free(c);
+            c = NULL;
+        }
+        else
+        {
+            // queue operation problem
+            return 0;
+        }
+    }
+    return 1;
 }
 
 void append_entity(ENTITY *entity)
