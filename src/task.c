@@ -169,6 +169,7 @@ void task_create_entity(char* name)
             }
             db->entities[db->size++] = e;
         }
+        db->committed = 0;
     }
     else
     {
