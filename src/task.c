@@ -266,7 +266,7 @@ void perform(command* c)
         case COMMAND_DATABASE:
             if(c->word_size == 2)
             {
-                if(strcmp(c->words[1], "ENTITIES") == 0)
+                if(strcmp(c->words[1], "entities") == 0 || strcmp(c->words[1], "ENTITIES") == 0)
                 {
                     if(db != NULL)
                     {
@@ -305,34 +305,34 @@ void perform(command* c)
         case COMMAND_CREATE:
             if(c->word_size == 5)
             {
-                if(strcmp(c->words[1], "FIELD") == 0)
+                if(strcmp(c->words[1], "field") == 0 || strcmp(c->words[1], "FIELD") == 0)
                 {
                     if(db != NULL)
                     {
                         if(ctx->type == CTX_ENTITY)
                         {
                             data_t type;
-                            if(strcmp(c->words[2], "STRING") == 0)
+                            if(strcmp(c->words[2], "string") == 0 || strcmp(c->words[2], "STRING") == 0)
                             {
                                 type = TYPE_STRING;
                             }
-                            else if(strcmp(c->words[2], "NUMBER") == 0)
+                            else if(strcmp(c->words[2], "number") == 0 || strcmp(c->words[2], "NUMBER") == 0)
                             {
                                 type = TYPE_NUMBER;
                             }
-                            else if(strcmp(c->words[2], "OBJECT") == 0)
+                            else if(strcmp(c->words[2], "object") == 0 || strcmp(c->words[2], "OBJECT") == 0)
                             {
                                 type = TYPE_OBJECT;
                             }
-                            else if(strcmp(c->words[2], "ARRAY") == 0)
+                            else if(strcmp(c->words[2], "array") == 0 || strcmp(c->words[2], "ARRAY") == 0)
                             {
                                 type = TYPE_ARRAY;
                             }
-                            else if(strcmp(c->words[2], "BOOLEAN") == 0)
+                            else if(strcmp(c->words[2], "boolean") == 0 || strcmp(c->words[2], "BOOLEAN") == 0)
                             {
                                 type = TYPE_BOOLEAN;
                             }
-                            else if(strcmp(c->words[2], "NULL") == 0)
+                            else if(strcmp(c->words[2], "null") == 0 || strcmp(c->words[2], "NULL") == 0)
                             {
                                 type = TYPE_NULL;
                             }
@@ -375,11 +375,11 @@ void perform(command* c)
             }
             else if(c->word_size == 3)
             {
-                if(strcmp(c->words[1], "DATABASE") == 0)
+                if(strcmp(c->words[1], "database") == 0 || strcmp(c->words[1], "DATABASE") == 0)
                 {
                     task_create_database(c->words[2]);
                 }
-                else if(strcmp(c->words[1], "ENTITY") == 0)
+                else if(strcmp(c->words[1], "entity") == 0 || strcmp(c->words[1], "ENTITY") == 0)
                 {
                     if(db != NULL)
                     {
@@ -403,11 +403,11 @@ void perform(command* c)
         case COMMAND_DROP:
             if(c->word_size == 3)
             {
-                if(strcmp(c->words[1], "DATABASE") == 0)
+                if(strcmp(c->words[1], "database") == 0 || strcmp(c->words[1], "DATABASE") == 0)
                 {
                     task_drop_database(c->words[2]);
                 }
-                else if(strcmp(c->words[1], "ENTITY") == 0)
+                else if(strcmp(c->words[1], "entity") == 0 || strcmp(c->words[1], "ENTITY") == 0)
                 {
                     task_drop_entity(c->words[2]);
                 }
@@ -432,11 +432,11 @@ void perform(command* c)
             {
                 if(c->word_size == 2)
                 {
-                    if(strcmp(c->words[1], "FIELDS") == 0)
+                    if(strcmp(c->words[1], "fields") == 0 || strcmp(c->words[1], "FIELDS") == 0)
                     {
 
                     }
-                    else if(strcmp(c->words[1], "COUNT") == 0)
+                    else if(strcmp(c->words[1], "count") == 0 || strcmp(c->words[1], "COUNT") == 0)
                     {
                         printf("<%d entities>\n", db->size);
                     }
@@ -518,7 +518,7 @@ void perform(command* c)
             }
             else if(c->word_size == 2)
             {
-                if(strcmp(c->words[1], "UP") == 0)
+                if(strcmp(c->words[1], "up") == 0 || strcmp(c->words[1], "UP") == 0)
                 {
                     context_up();
                 }
