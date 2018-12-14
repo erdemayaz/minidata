@@ -32,6 +32,14 @@ char* read_string_unit(FILE* file);
 
 void write_unsigned_integer_unit(FILE* file, uint32_t integer);
 
+uint32_t read_unsigned_integer_unit(FILE* file);
+
 void write_integer_unit(FILE* file, int32_t integer);
+
+int32_t read_integer_unit(FILE* file);
+
+void write_unsigned_character_unit(FILE* file, uint8_t character);
+
+uint8_t read_unsigned_character_unit(FILE* file);
 
 #endif

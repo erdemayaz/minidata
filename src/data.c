@@ -75,6 +75,23 @@ void write_unsigned_integer_unit(FILE* file, uint32_t integer)
     fwrite(&integer, size, 1, file);
 }
 
+uint32_t read_unsigned_integer_unit(FILE* file)
+{
+    uint8_t type;
+    uint32_t data;
+    fread(&type, 1, 1, file);
+    if(type == TYPE_NUMBER)
+    {
+        fread(&data, 4, 1, file);
+        fread(&data, 4, 1, file);
+        return data;
+    }
+    else
+    {
+        return INT32_MIN;
+    }
+}
+
 void write_integer_unit(FILE* file, int32_t integer)
 {
     uint32_t size = 4;
@@ -82,4 +99,48 @@ void write_integer_unit(FILE* file, int32_t integer)
     fwrite(&type, 1, 1, file);
     fwrite(&size, 4, 1, file);
     fwrite(&integer, size, 1, file);
+}
+
+int32_t read_integer_unit(FILE* file)
+{
+    uint8_t type;
+    int32_t data;
+    fread(&type, 1, 1, file);
+    if(type == TYPE_NUMBER)
+    {
+        fread(&data, 4, 1, file);
+        fread(&data, 4, 1, file);
+        return data;
+    }
+    else
+    {
+        return INT32_MIN;
+    }
+}
+
+void write_unsigned_character_unit(FILE* file, uint8_t character)
+{
+    uint32_t size = 1;
+    uint8_t type = TYPE_NUMBER;
+    fwrite(&type, 1, 1, file);
+    fwrite(&size, 4, 1, file);
+    fwrite(&character, size, 1, file);
+}
+
+uint8_t read_unsigned_character_unit(FILE* file)
+{
+    uint8_t type;
+    uint32_t size;
+    uint8_t data;
+    fread(&type, 1, 1, file);
+    if(type == TYPE_NUMBER)
+    {
+        fread(&size, 4, 1, file);
+        fread(&data, 1, 1, file);
+        return data;
+    }
+    else
+    {
+        return CHAR_MIN;
+    }
 }
