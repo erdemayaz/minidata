@@ -243,8 +243,8 @@ void task_create_field(char *name, data_t type, uint32_t size)
                 }
             }
             e->fields[e->size++] = f;
-            e->committed = 0;
         }
+        e->committed = 0;
     }
     else
     {
@@ -356,7 +356,7 @@ void perform(command* c)
                                 printf("Incorrect input for size\n");
                                 return;
                             }
-                            task_create_field(c->words[2], type, (uint32_t) size);
+                            task_create_field(c->words[4], type, (uint32_t) size);
                         }
                         else
                         {
@@ -434,7 +434,19 @@ void perform(command* c)
                 {
                     if(strcmp(c->words[1], "fields") == 0 || strcmp(c->words[1], "FIELDS") == 0)
                     {
-
+                        if(ctx->type == CTX_ENTITY)
+                        {
+                            int i;
+                            ENTITY *e = ctx->object.ent;
+                            for(i = 0; i < e->size; ++i)
+                            {
+                                printf("%s\n", e->fields[i]->name);
+                            }
+                        }
+                        else
+                        {
+                            printf("Not exist entity in context\n");
+                        }
                     }
                     else if(strcmp(c->words[1], "count") == 0 || strcmp(c->words[1], "COUNT") == 0)
                     {
@@ -446,6 +458,7 @@ void perform(command* c)
                         if(e)
                         {
                             set_ctx_entity(e);
+                            load_entity(e);
                         }
                         else
                         {

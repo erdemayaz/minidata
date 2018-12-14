@@ -109,6 +109,7 @@ DB* load_database(char* name)
                         db->entities[i]->name = string((char*) buffer, size);
                         db->entities[i]->file = NULL;
                         db->entities[i]->fields = NULL;
+                        db->entities[i]->size = 0;
                         db->entities[i]->list_size = 0;
                         db->entities[i]->committed = 1;
                     }
@@ -140,6 +141,77 @@ DB* load_database(char* name)
         free(db);
         free(file_name);
 		return NULL;
+    }
+}
+
+int load_entity(ENTITY *entity)
+{
+    if(entity->size > 0)
+        return 0;
+    
+    set_entity_path(register_string, entity->name);
+    if(exist_file(register_string) == 0)
+        return 0;
+    FILE *f = open_file(register_string);
+    if(f)
+    {
+        char *name = read_string_unit(f);
+        if(name != NULL)
+        {
+            if(strcmp(name, entity->name) == 0)
+            {
+                free(name);
+                name = entity->name;
+                printf("name = %s\n", name);
+            }
+            else
+            {
+                free(name);
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+
+        uint32_t size = read_unsigned_integer_unit(f);
+        printf("size = %d\n", size);
+        if(size != INT32_MIN)
+        {
+            if(size != entity->size)
+            {
+                return 0;
+            }
+            printf("size = %d\n", size);
+        }
+        else
+        {
+            return 0;
+        }
+
+        if(entity->fields == NULL)
+        {
+            entity->fields = (FIELD**) malloc(sizeof(FIELD*) * size);
+        }
+        else
+        {
+            return 0;
+        }
+
+        int i;
+        for(i = 0; i < size; ++i)
+        {
+            entity->fields[i]->name = read_string_unit(f);
+            entity->fields[i]->type = read_unsigned_character_unit(f);
+            entity->fields[i]->size = read_unsigned_integer_unit(f);
+        }
+        fclose(f);
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
 
@@ -311,7 +383,11 @@ int commit_entity(ENTITY *entity)
         if(entity->size > 0)
         {
             for(i = 0; i < entity->size; ++i)
+            {
                 write_string_unit(f, entity->fields[i]->name);
+                write_unsigned_character_unit(f, entity->fields[i]->type);
+                write_unsigned_integer_unit(f, entity->fields[i]->size);
+            }
         }
         entity->committed = 1;
         fclose(f);
