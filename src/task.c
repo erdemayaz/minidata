@@ -245,6 +245,7 @@ void task_create_field(char *name, data_t type, uint32_t size)
             e->fields[e->size++] = f;
         }
         e->committed = 0;
+        db->committed = 0;
     }
     else
     {
@@ -450,7 +451,14 @@ void perform(command* c)
                     }
                     else if(strcmp(c->words[1], "count") == 0 || strcmp(c->words[1], "COUNT") == 0)
                     {
-                        printf("<%d entities>\n", db->size);
+                        if(ctx->type == CTX_ENTITY)
+                        {
+                            printf("<%d fields>\n", ctx->object.ent->size);
+                        }
+                        else
+                        {
+                            printf("Not exist entity in context\n");
+                        }
                     }
                     else
                     {

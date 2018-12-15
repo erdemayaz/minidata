@@ -67,59 +67,48 @@ void set_field_path(char* buffer, char* name)
 
 DB* load_database(char* name)
 {
-    DB *db = (DB*) malloc(sizeof(DB));
-    char *file_name = get_database_path(name);
-    if(exist_file(file_name))
+    set_database_path(register_string, name);
+    if(exist_file(register_string))
     {
-        FILE *f = open_file(file_name);
-        free(file_name);
+        FILE *f = open_file(register_string);
         if(f != NULL)
         {
-            data_unit *du = NULL;
+            DB *db = (DB*) malloc(sizeof(DB));
 
-            du = read_data_unit(f);
-            char *db_name = string((char*) du->data, du->size);
-            free(du->data);
-            db->name = db_name;
-            free_data_unit(du);
-
-            du = read_data_unit(f);
-            int *temp = (int*) du->data; 
-            db->size = *temp;
-            free(du->data);
-            free_data_unit(du);
-
+            db->name = read_string_unit(f);
+            db->size = read_integer_unit(f);
             db->committed = 1;
 
             if(db->size > 0)
             {
                 db->entities = new_entity_list(db->size);
                 int i;
-                uint8_t type;
-                uint32_t size;
-                void *buffer = (void*) malloc(BUFFER_SIZE);
+                char *n = NULL;
+                uint32_t size = INT32_MIN;
                 for(i = 0; i < db->size; ++i)
                 {
-                    fread(&type, 1, 1, f);
-                    fread(&size, 4, 1, f);
-                    fread(buffer, size, 1, f);
-                    if(type == TYPE_STRING)
+                    n = read_string_unit(f);
+                    size = read_unsigned_integer_unit(f);
+                    if(n != NULL && size != INT32_MIN)
                     {
                         db->entities[i] = (ENTITY*) malloc(sizeof(ENTITY));
-                        db->entities[i]->name = string((char*) buffer, size);
+                        db->entities[i]->name = n;
                         db->entities[i]->file = NULL;
                         db->entities[i]->fields = NULL;
-                        db->entities[i]->size = 0;
+                        db->entities[i]->size = size;
                         db->entities[i]->list_size = 0;
                         db->entities[i]->committed = 1;
                     }
                     else
                     {
-                        // big problem
+                        // to do: free entity memories
+                        free(db->name);
+                        free(db->entities);
+                        free(db);
+                        return NULL;
                     }
                 }
                 db->list_size = db->size;
-                free(buffer);
             }
             else
             {
@@ -132,21 +121,18 @@ DB* load_database(char* name)
         }
         else
         {
-            free(db);
             return NULL;
         }
     }
     else
     {
-        free(db);
-        free(file_name);
 		return NULL;
     }
 }
 
 int load_entity(ENTITY *entity)
 {
-    if(entity->size > 0)
+    if(entity->list_size > 0)
         return 0;
     
     set_entity_path(register_string, entity->name);
@@ -162,7 +148,6 @@ int load_entity(ENTITY *entity)
             {
                 free(name);
                 name = entity->name;
-                printf("name = %s\n", name);
             }
             else
             {
@@ -176,14 +161,12 @@ int load_entity(ENTITY *entity)
         }
 
         uint32_t size = read_unsigned_integer_unit(f);
-        printf("size = %d\n", size);
         if(size != INT32_MIN)
         {
             if(size != entity->size)
             {
                 return 0;
             }
-            printf("size = %d\n", size);
         }
         else
         {
@@ -202,6 +185,7 @@ int load_entity(ENTITY *entity)
         int i;
         for(i = 0; i < size; ++i)
         {
+            entity->fields[i] = (FIELD*) malloc(sizeof(FIELD));
             entity->fields[i]->name = read_string_unit(f);
             entity->fields[i]->type = read_unsigned_character_unit(f);
             entity->fields[i]->size = read_unsigned_integer_unit(f);
@@ -359,7 +343,10 @@ int commit_db()
         if(db->size > 0)
         {
             for(i = 0; i < db->size; ++i)
+            {
                 write_string_unit(f, db->entities[i]->name);
+                write_unsigned_integer_unit(f, db->entities[i]->size);
+            }
         }
         db->committed = 1;
         fclose(f);
@@ -460,13 +447,13 @@ void append_entity(ENTITY *entity)
 
 FIELD* create_field(char* name, data_t type, uint32_t size, int* status)
 {
-        FIELD *field = (FIELD*) malloc(sizeof(FIELD));
-        field->type = type;
-        field->name = duplicate_string(name);
-        field->size = size;
-        field->committed = 0;
-        *status = 0;
-        return field;
+    FIELD *field = (FIELD*) malloc(sizeof(FIELD));
+    field->type = type;
+    field->name = duplicate_string(name);
+    field->size = size;
+    field->committed = 0;
+    *status = 0;
+    return field;
 }
 
 FIELD** new_field_list(uint32_t size)
