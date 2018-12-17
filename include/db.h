@@ -70,6 +70,8 @@ int free_entity(ENTITY* entity);
 
 int drop_entity(ENTITY* entity);
 
+int drop_field(FIELD* field);
+
 void append_entity(ENTITY *entity);
 
 int commit_db();

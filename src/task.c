@@ -135,6 +135,36 @@ void task_drop_entity(char* name)
     }
 }
 
+void task_drop_field(char* name)
+{
+    if(db != NULL)
+    {
+        if(ctx->type == CTX_ENTITY)
+        {
+            FIELD *field = find_field(name);
+            if(field)
+            {
+                if(drop_field(field) == 0)
+                {
+                    printf("Field '%s' could not dropped\n", name);
+                }
+            }
+            else
+            {
+                printf("Entity has not field as '%s'\n", name);
+            }
+        }
+        else
+        {
+            printf("Not exist entity in context\n");
+        }
+    }
+    else
+    {
+        printf("Not exist database in context\n");
+    }
+}
+
 void task_create_entity(char* name)
 {
     int status;
@@ -206,7 +236,6 @@ void task_list_entities()
     {
         printf("\n");
     }
-    printf("\n");
 }
 
 void task_create_field(char *name, data_t type, uint32_t size)
@@ -412,9 +441,13 @@ void perform(command* c)
                 {
                     task_drop_entity(c->words[2]);
                 }
+                else if(strcmp(c->words[1], "field") == 0 || strcmp(c->words[1], "FIELD") == 0)
+                {
+                    task_drop_field(c->words[2]);
+                }
                 else
                 {
-                    printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY], name:identity)\n");
+                    printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
                 }
             }
             else

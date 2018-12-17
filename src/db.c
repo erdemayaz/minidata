@@ -161,7 +161,7 @@ int load_entity(ENTITY *entity)
         }
 
         uint32_t size = read_unsigned_integer_unit(f);
-        if(size != INT32_MIN)
+        if(size != INT32_MIN && size >= 0)
         {
             if(size != entity->size)
             {
@@ -175,7 +175,23 @@ int load_entity(ENTITY *entity)
 
         if(entity->fields == NULL)
         {
-            entity->fields = (FIELD**) malloc(sizeof(FIELD*) * size);
+            if(size > 0)
+            {
+                if(size < 4)
+                {
+                    entity->fields = new_field_list(4);
+                    entity->list_size = 4;
+                }
+                else
+                {
+                    entity->fields = new_field_list(size);
+                    entity->list_size = size;
+                }
+            }
+            else
+            {
+                entity->list_size = 0;
+            }
         }
         else
         {
@@ -331,6 +347,28 @@ int drop_entity(ENTITY* entity)
     }
 }
 
+int drop_field(FIELD* field)
+{
+    int i;
+    ENTITY *entity = ctx->object.ent;
+    for(i = 0; i < entity->size; ++i)
+    {
+        if(entity->fields[i] == field)
+        {
+            free_field(field);
+            for(i = i; i + 1 < entity->size; ++i)
+            {
+                entity->fields[i] = entity->fields[i + 1];
+            }
+            entity->size--;
+            db->committed = 0;
+            entity->committed = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int commit_db()
 {
     set_database_path(register_string, db->name);
@@ -469,6 +507,16 @@ FIELD** expand_field_list(FIELD** fields, uint32_t* size)
 
 FIELD* find_field(char* name)
 {
+
+    int i;
+    ENTITY *entity = ctx->object.ent;
+    for(i = 0; i < entity->size; ++i)
+    {
+        if(strcmp(entity->fields[i]->name, name) == 0)
+        {
+            return entity->fields[i];
+        }
+    }
     return NULL;
 }
 
