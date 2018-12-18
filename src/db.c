@@ -218,13 +218,8 @@ int load_entity(ENTITY *entity)
 void init_database(FILE* f, char* name)
 {
     uint32_t zero = 0;
-    data_unit *unit = NULL;
-    unit = create_data_unit(TYPE_STRING, strlen(name), (void*) name);
-    write_data_unit(f, unit);
-    free_data_unit(unit);
-    unit = create_data_unit(TYPE_NUMBER, 4, (void*) &zero);
-    write_data_unit(f, unit);
-    free_data_unit(unit);
+    write_string_unit(f, name);
+    write_unsigned_integer_unit(f, zero);
 }
 
 int create_database(char* name, int* status)
@@ -244,14 +239,34 @@ int create_database(char* name, int* status)
 
 int drop_database(char* name)
 {
-    set_database_path(register_string, name);
-    if(exist_file(register_string))
+    DB *database = load_database(name);
+    if(database != NULL)
     {
+        set_database_path(register_string, name);
         if(remove(register_string) == 0)
         {
-            set_database_dir(register_string, name);
-            rmdir(register_string);
-            return 1;
+            int i;
+            int ok = 1;
+            for(i = 0; i < database->size; ++i)
+            {
+                sprintf(register_string, "%s%s/%s.mnty", 
+                    db_folder, database->name, database->entities[i]->name);
+                if(remove(register_string) != 0)
+                {
+                    ok = 0;
+                    break;
+                }
+            }
+            if(ok)
+            {
+                set_database_dir(register_string, name);
+                rmdir(register_string);
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
