@@ -13,6 +13,8 @@ CTX *ctx;
 DB *db;
 char *db_folder = "db/";
 commit_queue *queue;
+int flow_status;
+int flow_mode;
 
 clock_t begin, end;
 
@@ -48,6 +50,10 @@ void sli(char *source_name)
 					break;
 				}
 				perform(&c);
+				if(flow_status == 0)
+				{
+					break;
+				}
 			}
 		}
 		fclose(f);
@@ -95,13 +101,16 @@ int main(int argc, char* argv[])
 	ctx = init_ctx();
 	db = NULL;
 	queue = create_commit_queue();
+	flow_status = 1;
 
 	if(argc == 1)
 	{
+		flow_mode = 1;
 		cli();
 	}
 	else if(argc == 2)
 	{
+		flow_mode = 2;
 		begin = clock();
 		sli(argv[1]);
 		end = clock();
@@ -114,5 +123,5 @@ int main(int argc, char* argv[])
 	
 	free_commit_queue(queue);
 	destroy_ctx(ctx);
-	return 0;
+	return flow_status;
 }

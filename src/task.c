@@ -14,6 +14,8 @@ extern DB *db;
 extern char* db_folder;
 extern char register_string[BUFFER_SIZE];
 extern CTX *ctx;
+extern int flow_status;
+extern int flow_mode; // 1 - cli, 2 - sli
 
 void task_close(int notify)
 {
@@ -27,7 +29,10 @@ void task_close(int notify)
     else
     {
         if(notify)
+        {
             printf("Not exist database in context\n");
+            flow_status = -1;
+        }
     }
 }
 
@@ -38,6 +43,7 @@ void task_database(char* name)
         if(strcmp(db->name, name) == 0)
         {
             printf("This database is also opened\n");
+            flow_status = -1;
             return;
         }
         else
@@ -49,6 +55,7 @@ void task_database(char* name)
     if(db == NULL)
     {
         printf("Database '%s' does not exist\n", name);
+        flow_status = 0;
     } 
     else
     {
@@ -61,6 +68,7 @@ void task_create_database(char* name)
     if(!exist_dir(db_folder) && mkdir(db_folder))
     {
         printf("'%s' folder could not created\n", db_folder);
+        flow_status = 0;
         return;
     }
 
@@ -68,6 +76,7 @@ void task_create_database(char* name)
     if(!exist_dir(register_string) && mkdir(register_string))
     {
         printf("'%s' folder could not created\n", register_string);
+        flow_status = 0;
         return;
     }
 
@@ -86,6 +95,7 @@ void task_create_database(char* name)
         {
             printf("Database file could not created\n");
         }
+        flow_status = 0;
     }
 }
 
@@ -94,6 +104,7 @@ void task_drop_database(char* name)
     if(db != NULL && strcmp(db->name, name) == 0)
     {
         printf("Database is using\n");
+        flow_status = -1;
     }
     else
     {
@@ -104,6 +115,7 @@ void task_drop_database(char* name)
         else
         {
             printf("Database could not drop\n");
+            flow_status = 0;
         }
     }
 }
@@ -115,6 +127,9 @@ void task_drop_entity(char* name)
         ENTITY *e = find_entity(name);
         if(e)
         {
+            if(ctx->type == CTX_ENTITY && ctx->object.ent == e)
+                context_up();
+            
             if(free_entity(e))
             {
                 enqueue_commit(create_commit(COMMIT_DROP_ENTITY, name));
@@ -122,16 +137,19 @@ void task_drop_entity(char* name)
             else
             {
                 printf("Entity '%s' could not dropped\n", name);
+                flow_status = 0;
             }
         }
         else
         {
             printf("There is no entity in database as '%s'\n", name);
+            flow_status = -1;
         }
     }
     else
     {
         printf("Not exist database in context\n");
+        flow_status = -1;
     }
 }
 
@@ -147,21 +165,25 @@ void task_drop_field(char* name)
                 if(drop_field(field) == 0)
                 {
                     printf("Field '%s' could not dropped\n", name);
+                    flow_status = 0;
                 }
             }
             else
             {
                 printf("Entity has not field as '%s'\n", name);
+                flow_status = -1;
             }
         }
         else
         {
             printf("Not exist entity in context\n");
+            flow_status = -1;
         }
     }
     else
     {
         printf("Not exist database in context\n");
+        flow_status = -1;
     }
 }
 
@@ -194,6 +216,7 @@ void task_create_entity(char* name)
                     printf("Operating system did not allocate memory, entities list could not expanded\n");
                     drop_entity(e);
                     db->list_size = old_list_size;
+                    flow_status = 0;
                     return;
                 }
             }
@@ -211,6 +234,7 @@ void task_create_entity(char* name)
         {
             printf("Entity file could not created\n");
         }
+        flow_status = 0;
     }
 }
 
@@ -219,6 +243,7 @@ void task_commit()
     if(!commit())
     {
         printf("Commit failed\n");
+        flow_status = -1;
     }
 }
 
@@ -268,6 +293,7 @@ void task_create_field(char *name, data_t type, uint32_t size)
                     printf("Operating system did not allocate memory, field list could not expanded\n");
                     free_field(f);
                     e->list_size = old_list_size;
+                    flow_status = 0;
                     return;
                 }
             }
@@ -286,6 +312,7 @@ void task_create_field(char *name, data_t type, uint32_t size)
         {
             printf("Entity file could not created\n");
         }
+        flow_status = 0;
     }
 }
 
@@ -305,6 +332,7 @@ void perform(command* c)
                     else
                     {
                         printf("Not exist database in context\n");
+                        flow_status = -1;
                     }
                 }
                 else
@@ -313,6 +341,7 @@ void perform(command* c)
                     if(db == NULL)
                     {
                         printf("Connection failed\n");
+                        flow_status = -1;
                     }
                 }
             }
@@ -330,6 +359,7 @@ void perform(command* c)
             else
             {
                 printf("'DATABASE' command takes 1 optional parameter(name:identity)\n");
+                flow_status = 0;
             }
             break;
         case COMMAND_CREATE:
@@ -369,6 +399,7 @@ void perform(command* c)
                             else
                             {
                                 printf("'%s' is undefined data type\n", c->words[2]);
+                                flow_status = 0;
                                 return;
                             }
                             int status;
@@ -378,12 +409,14 @@ void perform(command* c)
                                 if(size < 0)
                                 {
                                     printf("Incorrect input for size\n");
+                                    flow_status = 0;
                                     return;
                                 }
                             }
                             else
                             {
                                 printf("Incorrect input for size\n");
+                                flow_status = 0;
                                 return;
                             }
                             task_create_field(c->words[4], type, (uint32_t) size);
@@ -391,16 +424,19 @@ void perform(command* c)
                         else
                         {
                             printf("Not exist entity in context\n");
+                            flow_status = -1;
                         }
                     }
                     else
                     {
                         printf("Not exist database in context\n");
+                        flow_status = -1;
                     }
                 }
                 else
                 {
                     printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
+                    flow_status = 0;
                 }
             }
             else if(c->word_size == 3)
@@ -418,16 +454,19 @@ void perform(command* c)
                     else
                     {
                         printf("Not exist database in context\n");
+                        flow_status = -1;
                     }
                 }
                 else
                 {
                     printf("'%s' is undefined type\n", c->words[1]);
+                    flow_status = 0;
                 }
             }
             else
             {
                 printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
+                flow_status = 0;
             }
             break;
         case COMMAND_DROP:
@@ -448,18 +487,25 @@ void perform(command* c)
                 else
                 {
                     printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
+                    flow_status = 0;
                 }
             }
             else
             {
                 printf("'DROP' command takes 2 parameter(type:[DATABASE, ENTITY], name:identity)\n");
+                flow_status = 0;
             }
             break;
         case COMMAND_CLOSE:
             if(c->word_size == 1)
+            {
                 task_close(1);
+            }
             else
+            {
                 printf("'CLOSE' command takes any parameter\n");
+                flow_status = 0;
+            }
             break;
         case COMMAND_ENTITY:
             if(db != NULL)
@@ -480,6 +526,7 @@ void perform(command* c)
                         else
                         {
                             printf("Not exist entity in context\n");
+                            flow_status = -1;
                         }
                     }
                     else if(strcmp(c->words[1], "count") == 0 || strcmp(c->words[1], "COUNT") == 0)
@@ -491,6 +538,7 @@ void perform(command* c)
                         else
                         {
                             printf("Not exist entity in context\n");
+                            flow_status = -1;
                         }
                     }
                     else
@@ -504,6 +552,7 @@ void perform(command* c)
                         else
                         {
                             printf("There is not entity '%s' in database\n", c->words[1]);
+                            flow_status = 0;
                         }
                     }
                 }
@@ -516,16 +565,19 @@ void perform(command* c)
                     else
                     {
                         printf("Not exist entity in context\n");
+                        flow_status = -1;
                     }
                 }
                 else
                 {
                     printf("'ENTITY' command takes 1 optional parameter(name:identity)\n");
+                    flow_status = 0;
                 }
             }
             else
             {
                 printf("Not exist database in context\n");
+                flow_status = -1;
             }
             break;
         case COMMAND_EXIT:
@@ -544,11 +596,13 @@ void perform(command* c)
                 else
                 {
                     printf("Not exist database in context\n");
+                    flow_status = -1;
                 }
             }
             else
             {
                 printf("'COMMIT' command takes any parameter\n");
+                flow_status = 0;
             }
             break;
         case COMMAND_CONTEXT:
@@ -579,11 +633,13 @@ void perform(command* c)
                 else
                 {
                     printf("'CONTEXT' command takes 1 optional parameter(type:[UP])\n");
+                    flow_status = 0;
                 }
             }
             else
             {
                 printf("'CONTEXT' command takes 1 optional parameter(type:[UP])\n");
+                flow_status = 0;
             }
             break;
     }
