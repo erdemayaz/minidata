@@ -30,7 +30,8 @@ void task_close(int notify)
     {
         if(notify)
         {
-            printf("Not exist database in context\n");
+            if(flow_mode == 1)
+                printf("Not exist database in context\n");
             flow_status = -1;
         }
     }
@@ -42,7 +43,8 @@ void task_database(char* name)
     {
         if(strcmp(db->name, name) == 0)
         {
-            printf("This database is also opened\n");
+            if(flow_mode == 1)
+                printf("This database is also opened\n");
             flow_status = -1;
             return;
         }
@@ -103,7 +105,8 @@ void task_drop_database(char* name)
 {
     if(db != NULL && strcmp(db->name, name) == 0)
     {
-        printf("Database is using\n");
+        if(flow_mode == 1)
+            printf("Database is using\n");
         flow_status = -1;
     }
     else
@@ -142,13 +145,15 @@ void task_drop_entity(char* name)
         }
         else
         {
-            printf("There is no entity in database as '%s'\n", name);
+            if(flow_mode == 1)
+                printf("There is no entity in database as '%s'\n", name);
             flow_status = -1;
         }
     }
     else
     {
-        printf("Not exist database in context\n");
+        if(flow_mode == 1)
+            printf("Not exist database in context\n");
         flow_status = -1;
     }
 }
@@ -170,19 +175,22 @@ void task_drop_field(char* name)
             }
             else
             {
-                printf("Entity has not field as '%s'\n", name);
+                if(flow_mode == 1)
+                    printf("Entity has not field as '%s'\n", name);
                 flow_status = -1;
             }
         }
         else
         {
-            printf("Not exist entity in context\n");
+            if(flow_mode == 1)
+                printf("Not exist entity in context\n");
             flow_status = -1;
         }
     }
     else
     {
-        printf("Not exist database in context\n");
+        if(flow_mode == 1)
+            printf("Not exist database in context\n");
         flow_status = -1;
     }
 }
@@ -242,7 +250,8 @@ void task_commit()
 {
     if(!commit())
     {
-        printf("Commit failed\n");
+        if(flow_mode == 1)
+            printf("Commit failed\n");
         flow_status = -1;
     }
 }
@@ -331,7 +340,8 @@ void perform(command* c)
                     }
                     else
                     {
-                        printf("Not exist database in context\n");
+                        if(flow_mode == 1)
+                            printf("Not exist database in context\n");
                         flow_status = -1;
                     }
                 }
@@ -340,7 +350,8 @@ void perform(command* c)
                     task_database(c->words[1]);
                     if(db == NULL)
                     {
-                        printf("Connection failed\n");
+                        if(flow_mode == 1)
+                            printf("Connection failed\n");
                         flow_status = -1;
                     }
                 }
@@ -423,13 +434,15 @@ void perform(command* c)
                         }
                         else
                         {
-                            printf("Not exist entity in context\n");
+                            if(flow_mode == 1)
+                                printf("Not exist entity in context\n");
                             flow_status = -1;
                         }
                     }
                     else
                     {
-                        printf("Not exist database in context\n");
+                        if(flow_mode == 1)
+                            printf("Not exist database in context\n");
                         flow_status = -1;
                     }
                 }
@@ -453,7 +466,8 @@ void perform(command* c)
                     }
                     else
                     {
-                        printf("Not exist database in context\n");
+                        if(flow_mode == 1)
+                            printf("Not exist database in context\n");
                         flow_status = -1;
                     }
                 }
@@ -525,7 +539,8 @@ void perform(command* c)
                         }
                         else
                         {
-                            printf("Not exist entity in context\n");
+                            if(flow_mode == 1)
+                                printf("Not exist entity in context\n");
                             flow_status = -1;
                         }
                     }
@@ -537,7 +552,8 @@ void perform(command* c)
                         }
                         else
                         {
-                            printf("Not exist entity in context\n");
+                            if(flow_mode == 1)
+                                printf("Not exist entity in context\n");
                             flow_status = -1;
                         }
                     }
@@ -564,7 +580,8 @@ void perform(command* c)
                     }
                     else
                     {
-                        printf("Not exist entity in context\n");
+                        if(flow_mode == 1)
+                            printf("Not exist entity in context\n");
                         flow_status = -1;
                     }
                 }
@@ -576,7 +593,8 @@ void perform(command* c)
             }
             else
             {
-                printf("Not exist database in context\n");
+                if(flow_mode == 1)
+                    printf("Not exist database in context\n");
                 flow_status = -1;
             }
             break;
@@ -595,7 +613,8 @@ void perform(command* c)
                 }
                 else
                 {
-                    printf("Not exist database in context\n");
+                    if(flow_mode == 1)
+                        printf("Not exist database in context\n");
                     flow_status = -1;
                 }
             }
