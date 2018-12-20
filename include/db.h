@@ -68,6 +68,8 @@ ENTITY* find_entity(char* name);
 
 int free_entity(ENTITY* entity);
 
+void free_entity_list(ENTITY** entity_list, int size);
+
 int drop_entity(ENTITY* entity);
 
 int drop_field(FIELD* field);
@@ -91,5 +93,9 @@ FIELD** expand_field_list(FIELD** fields, uint32_t* size);
 FIELD* find_field(char* name);
 
 void free_field(FIELD *field);
+
+void free_field_list(FIELD** fields, int size);
+
+void free_database();
 
 #endif

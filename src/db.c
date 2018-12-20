@@ -339,6 +339,21 @@ int free_entity(ENTITY* entity)
     return res;
 }
 
+void free_entity_list(ENTITY** entity_list, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        if(entity_list[i]->size > 0)
+        {
+            free_field_list(entity_list[i]->fields, entity_list[i]->size);
+        }
+        free(entity_list[i]->name);
+        free(entity_list[i]);
+    }
+    free(entity_list);
+}
+
 int drop_entity(ENTITY* entity)
 {
     char *file_name = get_entity_path(entity->name);
@@ -541,4 +556,26 @@ void free_field(FIELD *field)
         free(field->name);
     free(field);
     field = NULL;
+}
+
+void free_field_list(FIELD** fields, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        free_field(fields[i]);
+    }
+    free(fields);
+    fields = NULL;
+}
+
+void free_database()
+{
+    if(db->size > 0)
+    {
+        free_entity_list(db->entities, db->size);
+    }
+    free(db->name);
+    free(db);
+    db = NULL;
 }

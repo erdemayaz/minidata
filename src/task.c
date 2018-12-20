@@ -21,9 +21,7 @@ void task_close(int notify)
 {
     if(db != NULL)
     {
-        free(db->name);
-        free(db);
-        db = NULL;
+        free_database();
         set_ctx_host();
     }
     else
