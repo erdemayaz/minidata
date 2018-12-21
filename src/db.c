@@ -344,9 +344,13 @@ void free_entity_list(ENTITY** entity_list, int size)
     int i;
     for(i = 0; i < size; ++i)
     {
-        if(entity_list[i]->size > 0)
+        if(entity_list[i]->size > 0 && entity_list[i]->fields != NULL)
         {
             free_field_list(entity_list[i]->fields, entity_list[i]->size);
+        }
+        else if(entity_list[i]->fields != NULL)
+        {
+            free(entity_list[i]->fields);
         }
         free(entity_list[i]->name);
         free(entity_list[i]);
