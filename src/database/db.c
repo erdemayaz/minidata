@@ -3,12 +3,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <dir.h>
-#include "../include/file.h"
-#include "../include/db.h"
-#include "../include/string.h"
-#include "../include/data.h"
-#include "../include/commit.h"
-#include "../include/context.h"
+#include "../../include/file.h"
+#include "../../include/db.h"
+#include "../../include/string.h"
+#include "../../include/data.h"
+#include "../../include/commit.h"
+#include "../../include/context.h"
 
 extern char *db_folder;
 extern DB *db;

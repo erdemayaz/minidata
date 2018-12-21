@@ -9,11 +9,11 @@ minidata: main.o file.o db.o command.o task.o string.o data.o commit.o context.o
 main.o: src/main.c
 	$(CC) $(CFLAGS) src/main.c
 
-file.o: src/file.c
-	$(CC) $(CFLAGS) src/file.c
+file.o: src/util/file.c
+	$(CC) $(CFLAGS) src/util/file.c
 
-db.o: src/db.c
-	$(CC) $(CFLAGS) src/db.c
+db.o: src/database/db.c
+	$(CC) $(CFLAGS) src/database/db.c
 
 command.o: src/command.c
 	$(CC) $(CFLAGS) src/command.c
@@ -21,17 +21,17 @@ command.o: src/command.c
 task.o: src/task.c
 	$(CC) $(CFLAGS) src/task.c
 
-string.o: src/string.c
-	$(CC) $(CFLAGS) src/string.c
+string.o: src/util/string.c
+	$(CC) $(CFLAGS) src/util/string.c
 
-data.o: src/data.c
-	$(CC) $(CFLAGS) src/data.c
+data.o: src/util/data.c
+	$(CC) $(CFLAGS) src/util/data.c
 
-commit.o: src/commit.c
-	$(CC) $(CFLAGS) src/commit.c
+commit.o: src/database/commit.c
+	$(CC) $(CFLAGS) src/database/commit.c
 
-context.o: src/context.c
-	$(CC) $(CFLAGS) src/context.c
+context.o: src/database/context.c
+	$(CC) $(CFLAGS) src/database/context.c
 
 test: clean all
 	minidata test/db_test.mncd

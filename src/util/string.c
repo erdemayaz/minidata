@@ -3,7 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
-#include "../include/command.h"
+#include "../../include/command.h"
 
 char* string(char* array, unsigned int size)
 {

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/db.h"
-#include "../include/context.h"
+#include "../../include/db.h"
+#include "../../include/context.h"
 
 extern CTX *ctx;
 extern DB *db;
