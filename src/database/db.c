@@ -332,6 +332,7 @@ int free_entity(ENTITY* entity)
                 db->entities[i] = db->entities[i + 1];
             }
             db->size--;
+            db->committed = 0;
             res++;
             break;
         }
@@ -360,23 +361,20 @@ void free_entity_list(ENTITY** entity_list, int size)
 
 int drop_entity(ENTITY* entity)
 {
-    char *file_name = get_entity_path(entity->name);
-    if(exist_file(file_name))
+    set_entity_path(register_string, entity->name);
+    if(exist_file(register_string))
     {
-        if(remove(file_name) == 0)
+        if(remove(register_string) == 0)
         {
-            free(file_name);
             return 1;
         }
         else
         {
-            free(file_name);
             return 0;
         }
     }
     else
     {
-        free(file_name);
         return 0;
     }
 }

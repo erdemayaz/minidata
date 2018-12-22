@@ -206,30 +206,38 @@ void task_create_entity(char* name)
             db->list_size = 4;
             db->entities[0] = e;
             db->size = 1;
+            db->committed = 0;
         }
         else
         {
-            int old_list_size = db->list_size;
-            if(db->size >= db->list_size)
+            if(find_entity(name) == NULL)
             {
-                ENTITY **temp = expand_entity_list(db->entities, &db->list_size);
-                if(temp != NULL)
+                int old_list_size = db->list_size;
+                if(db->size >= db->list_size)
                 {
-                    if(db->entities != temp)
-                        db->entities = temp;
+                    ENTITY **temp = expand_entity_list(db->entities, &db->list_size);
+                    if(temp != NULL)
+                    {
+                        if(db->entities != temp)
+                            db->entities = temp;
+                    }
+                    else
+                    {
+                        printf("Operating system did not allocate memory, entities list could not expanded\n");
+                        drop_entity(e);
+                        db->list_size = old_list_size;
+                        flow_status = 0;
+                        return;
+                    }
                 }
-                else
-                {
-                    printf("Operating system did not allocate memory, entities list could not expanded\n");
-                    drop_entity(e);
-                    db->list_size = old_list_size;
-                    flow_status = 0;
-                    return;
-                }
+                db->entities[db->size++] = e;
+                db->committed = 0;
             }
-            db->entities[db->size++] = e;
+            else
+            {
+                printf("Already exists a entity in database with this name\n");
+            }
         }
-        db->committed = 0;
     }
     else
     {
