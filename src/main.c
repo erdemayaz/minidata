@@ -15,6 +15,7 @@ char *db_folder = "db/";
 commit_queue *queue;
 int flow_status;
 int flow_mode;
+int runtime;
 
 clock_t begin, end;
 
@@ -93,6 +94,8 @@ void cli()
 			perform(&c);
 		}
 		end = clock();
+		if(runtime)
+			printf("<%.3lfs>\n", ((double) (end - begin)) / CLOCKS_PER_SEC);
 	}
 }
 
@@ -102,6 +105,7 @@ int main(int argc, char* argv[])
 	db = NULL;
 	queue = create_commit_queue();
 	flow_status = 1;
+	runtime = 0;
 
 	if(argc == 1)
 	{

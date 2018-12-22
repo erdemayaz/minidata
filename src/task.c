@@ -16,6 +16,7 @@ extern char register_string[BUFFER_SIZE];
 extern CTX *ctx;
 extern int flow_status;
 extern int flow_mode; // 1 - cli, 2 - sli
+extern int runtime;
 
 void task_close(int notify)
 {
@@ -657,6 +658,53 @@ void perform(command* c)
             {
                 printf("'CONTEXT' command takes 1 optional parameter(type:[UP])\n");
                 flow_status = 0;
+            }
+            break;
+        case COMMAND_SET:
+            if(c->word_size > 1)
+            {
+                if(strcmp(c->words[1], "runtime") == 0 || strcmp(c->words[1], "RUNTIME") == 0)
+                {
+                    if(c->word_size == 3)
+                    {
+                        if(strcmp(c->words[2], "on") == 0 || strcmp(c->words[2], "ON") == 0)
+                        {
+                            runtime = 1;
+                        }
+                        else if(strcmp(c->words[2], "off") == 0 || strcmp(c->words[2], "OFF") == 0)
+                        {
+                            runtime = 0;
+                        }
+                        else
+                        {
+                            if(flow_mode == 1)
+                                printf("'SET RUNTIME' command takes 1 parameter(type:[ON, OFF])\n");
+                            flow_status = -1;
+                        }
+                    }
+                    else
+                    {
+                        if(flow_mode == 1)
+                            printf("'SET RUNTIME' command takes 1 parameter(type:[ON, OFF])\n");
+                        flow_status = -1;
+                    }
+                }
+                else if(strcmp(c->words[1], "charset") == 0 || strcmp(c->words[1], "CHARSET") == 0)
+                {
+                    // set charset
+                }
+                else
+                {
+                    if(flow_mode == 1)
+                        printf("'SET' command takes 1 parameter(type:[RUNTIME, CHARSET])\n");
+                    flow_status = -1;
+                }
+            }
+            else
+            {
+                if(flow_mode == 1)
+                    printf("'SET' command takes 1 parameter(type:[RUNTIME, CHARSET])\n");
+                flow_status = -1;
             }
             break;
     }

@@ -76,6 +76,10 @@ void create_command(char* string, command* c)
     {
         c->type = COMMAND_CONTEXT;
     }
+    else if(strcmp(command_word, "set") == 0 || strcmp(command_word, "SET") == 0)
+    {
+        c->type = COMMAND_SET;
+    }
     else 
     {
         c->type = COMMAND_UNDEFINED;

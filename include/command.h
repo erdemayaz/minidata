@@ -15,7 +15,8 @@ typedef enum command_type
     COMMAND_COMMIT,
     COMMAND_UNDEFINED,
     COMMAND_BUFFER_OVERFLOW,
-    COMMAND_CONTEXT
+    COMMAND_CONTEXT,
+    COMMAND_SET
 } command_type;
 
 typedef struct command
