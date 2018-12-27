@@ -3,13 +3,91 @@
 #include <string.h>
 #include "../include/command.h"
 #include "../include/string.h"
+#include "../tool/miniscanner.h"
 
-void get_command(char* buffer)
+extern int yylex();
+extern int yylineno;
+extern char* yytext;
+
+void get_command(command *c)
 {
+    int ntoken;
+    c->token_size = 0;
     printf("> ");
-    fflush(stdin);
-    fgets(buffer, BUFFER_SIZE, stdin);
-    buffer[strcspn(buffer, "\n")] = 0;
+    ntoken = yylex();
+    while(ntoken)
+    {
+        if(c->token_size < WORD_SIZE)
+        {
+            c->tokens[c->token_size] = ntoken;
+            switch(ntoken)
+            {
+                case TOKEN_CHAR:
+                    c->values[c->token_size][0] = yytext[1];
+                    c->values[c->token_size][1] = '\0';
+                    break;
+                case TOKEN_FLOATNUM:
+                    strcpy(c->values[c->token_size], yytext);
+                    break;
+                case TOKEN_INTNUM:
+                    strcpy(c->values[c->token_size], yytext);
+                    break;
+                case TOKEN_IDENTIFIER:
+                    strcpy(c->values[c->token_size], yytext);
+                    break;
+                case TOKEN_LETTER:
+                    strcpy(c->values[c->token_size], yytext);
+                    break;
+                case TOKEN_STRING:
+                    strcpy(c->values[c->token_size], yytext);
+                    break;
+            }
+            c->token_size++;
+        }
+        else
+        {
+            c->type = COMMAND_BUFFER_OVERFLOW;
+            break;
+        }
+        ntoken = yylex();
+    }
+
+    switch(c->tokens[0])
+    {
+        case KEYWORD_CREATE:
+            c->type = COMMAND_CREATE;
+            break;
+        case KEYWORD_ENTITY:
+            c->type = COMMAND_ENTITY;
+            break;
+        case KEYWORD_DATABASE:
+            c->type = COMMAND_DATABASE;
+            break;
+        case KEYWORD_COMMIT:
+            c->type = COMMAND_COMMIT;
+            break;
+        case KEYWORD_DROP:
+            c->type = COMMAND_DROP;
+            break;
+        case KEYWORD_EXIT:
+            c->type = COMMAND_EXIT;
+            break;
+        case KEYWORD_QUIT:
+            c->type = COMMAND_EXIT;
+            break;
+        case KEYWORD_CLOSE:
+            c->type = COMMAND_CLOSE;
+            break;
+        case KEYWORD_CONTEXT:
+            c->type = COMMAND_CONTEXT;
+            break;
+        case KEYWORD_SET:
+            c->type = COMMAND_SET;
+            break;
+        default:
+            c->type = COMMAND_UNDEFINED;
+            break;
+    }
 }
 
 void clear_command(char* buffer)
@@ -25,63 +103,5 @@ void clear_buffer(char* buffer)
     if(buffer)
     {
         memset(buffer, 0, BUFFER_SIZE);
-    }
-}
-
-void create_command(char* string, command* c)
-{
-    int word_size = 0;
-    split_string(c, string, &word_size);
-    char *command_word = c->words[0];
-    c->word_size = word_size;
-    if(word_size > WORD_SIZE)
-    {
-        c->type = COMMAND_BUFFER_OVERFLOW;
-        return;
-    }
-
-    if(strcmp(command_word, "create") == 0 || strcmp(command_word, "CREATE") == 0)
-    {
-        c->type = COMMAND_CREATE;
-    } 
-    else if(strcmp(command_word, "entity") == 0 || strcmp(command_word, "ENTITY") == 0)
-    {
-        c->type = COMMAND_ENTITY;
-    } 
-    else if(strcmp(command_word, "database") == 0 || strcmp(command_word, "DATABASE") == 0)
-    {
-        c->type = COMMAND_DATABASE;
-    } 
-    else if(strcmp(command_word, "commit") == 0 || strcmp(command_word, "COMMIT") == 0)
-    {
-        c->type = COMMAND_COMMIT;
-    } 
-    else if(strcmp(command_word, "drop") == 0 || strcmp(command_word, "DROP") == 0)
-    {
-        c->type = COMMAND_DROP;
-    } 
-    else if(strcmp(command_word, "exit") == 0 || strcmp(command_word, "EXIT") == 0)
-    {
-        c->type = COMMAND_EXIT;
-    } 
-    else if(strcmp(command_word, "quit") == 0 || strcmp(command_word, "QUIT") == 0)
-    {
-        c->type = COMMAND_EXIT;
-    }  
-    else if(strcmp(command_word, "close") == 0 || strcmp(command_word, "CLOSE") == 0)
-    {
-        c->type = COMMAND_CLOSE;
-    } 
-    else if(strcmp(command_word, "context") == 0 || strcmp(command_word, "CONTEXT") == 0)
-    {
-        c->type = COMMAND_CONTEXT;
-    }
-    else if(strcmp(command_word, "set") == 0 || strcmp(command_word, "SET") == 0)
-    {
-        c->type = COMMAND_SET;
-    }
-    else 
-    {
-        c->type = COMMAND_UNDEFINED;
     }
 }

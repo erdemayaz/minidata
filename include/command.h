@@ -21,17 +21,16 @@ typedef enum command_type
 
 typedef struct command
 {
-    char words[WORD_SIZE][BUFFER_SIZE];
-    int word_size;
+    int tokens[WORD_SIZE];
+    char values[WORD_SIZE][BUFFER_SIZE];
+    int token_size;
     command_type type;
 } command;
 
-void get_command(char* buffer);
+void get_command(command *c);
 
 void clear_buffer(char* buffer);
 
 void clear_command(char* buffer);
-
-void create_command(char* string, command* c);
 
 #endif

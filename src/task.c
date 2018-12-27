@@ -9,6 +9,7 @@
 #include "../include/commit.h"
 #include "../include/context.h"
 #include "../include/string.h"
+#include "../tool/miniscanner.h"
 
 extern DB *db;
 extern char* db_folder;
@@ -337,9 +338,9 @@ void perform(command* c)
     switch(c->type)
     {
         case COMMAND_DATABASE:
-            if(c->word_size == 2)
+            if(c->token_size == 2)
             {
-                if(strcmp(c->words[1], "entities") == 0 || strcmp(c->words[1], "ENTITIES") == 0)
+                if(c->tokens[1] == KEYWORD_ENTITIES)
                 {
                     if(db != NULL)
                     {
@@ -354,7 +355,7 @@ void perform(command* c)
                 }
                 else
                 {
-                    task_database(c->words[1]);
+                    task_database(c->values[1]);
                     if(db == NULL)
                     {
                         if(flow_mode == 1)
@@ -363,7 +364,7 @@ void perform(command* c)
                     }
                 }
             }
-            else if(c->word_size == 1)
+            else if(c->token_size == 1)
             {
                 if(db != NULL)
                 {
@@ -381,47 +382,47 @@ void perform(command* c)
             }
             break;
         case COMMAND_CREATE:
-            if(c->word_size == 5)
+            if(c->token_size == 5)
             {
-                if(strcmp(c->words[1], "field") == 0 || strcmp(c->words[1], "FIELD") == 0)
+                if(c->tokens[1] == KEYWORD_FIELD)
                 {
                     if(db != NULL)
                     {
                         if(ctx->type == CTX_ENTITY)
                         {
                             data_t type;
-                            if(strcmp(c->words[2], "string") == 0 || strcmp(c->words[2], "STRING") == 0)
+                            if(c->tokens[2] == KEYWORD_STRING)
                             {
                                 type = TYPE_STRING;
                             }
-                            else if(strcmp(c->words[2], "number") == 0 || strcmp(c->words[2], "NUMBER") == 0)
+                            else if(c->tokens[2] == KEYWORD_NUMBER)
                             {
                                 type = TYPE_NUMBER;
                             }
-                            else if(strcmp(c->words[2], "object") == 0 || strcmp(c->words[2], "OBJECT") == 0)
+                            else if(c->tokens[2] == KEYWORD_OBJECT)
                             {
                                 type = TYPE_OBJECT;
                             }
-                            else if(strcmp(c->words[2], "array") == 0 || strcmp(c->words[2], "ARRAY") == 0)
+                            else if(c->tokens[2] == KEYWORD_ARRAY)
                             {
                                 type = TYPE_ARRAY;
                             }
-                            else if(strcmp(c->words[2], "boolean") == 0 || strcmp(c->words[2], "BOOLEAN") == 0)
+                            else if(c->tokens[2] == KEYWORD_BOOLEAN)
                             {
                                 type = TYPE_BOOLEAN;
                             }
-                            else if(strcmp(c->words[2], "null") == 0 || strcmp(c->words[2], "NULL") == 0)
+                            else if(c->tokens[2] == KEYWORD_NULL)
                             {
                                 type = TYPE_NULL;
                             }
                             else
                             {
-                                printf("'%s' is undefined data type\n", c->words[2]);
+                                printf("'%s' is undefined data type\n", c->values[2]);
                                 flow_status = 0;
                                 return;
                             }
                             int status;
-                            int size = string_to_integer(c->words[3], &status);
+                            int size = string_to_integer(c->values[3], &status);
                             if(status == 0)
                             {
                                 if(size < 0)
@@ -437,7 +438,7 @@ void perform(command* c)
                                 flow_status = 0;
                                 return;
                             }
-                            task_create_field(c->words[4], type, (uint32_t) size);
+                            task_create_field(c->values[4], type, (uint32_t) size);
                         }
                         else
                         {
@@ -459,17 +460,17 @@ void perform(command* c)
                     flow_status = 0;
                 }
             }
-            else if(c->word_size == 3)
+            else if(c->token_size == 3)
             {
-                if(strcmp(c->words[1], "database") == 0 || strcmp(c->words[1], "DATABASE") == 0)
+                if(c->tokens[1] == KEYWORD_DATABASE)
                 {
-                    task_create_database(c->words[2]);
+                    task_create_database(c->values[2]);
                 }
-                else if(strcmp(c->words[1], "entity") == 0 || strcmp(c->words[1], "ENTITY") == 0)
+                else if(c->tokens[1] == KEYWORD_ENTITY)
                 {
                     if(db != NULL)
                     {
-                        task_create_entity(c->words[2]);
+                        task_create_entity(c->values[2]);
                     }
                     else
                     {
@@ -480,7 +481,7 @@ void perform(command* c)
                 }
                 else
                 {
-                    printf("'%s' is undefined type\n", c->words[1]);
+                    printf("'%s' is undefined type\n", c->values[1]);
                     flow_status = 0;
                 }
             }
@@ -491,19 +492,19 @@ void perform(command* c)
             }
             break;
         case COMMAND_DROP:
-            if(c->word_size == 3)
+            if(c->token_size == 3)
             {
-                if(strcmp(c->words[1], "database") == 0 || strcmp(c->words[1], "DATABASE") == 0)
+                if(c->tokens[1] == KEYWORD_DATABASE)
                 {
-                    task_drop_database(c->words[2]);
+                    task_drop_database(c->values[2]);
                 }
-                else if(strcmp(c->words[1], "entity") == 0 || strcmp(c->words[1], "ENTITY") == 0)
+                else if(c->tokens[1] == KEYWORD_ENTITY)
                 {
-                    task_drop_entity(c->words[2]);
+                    task_drop_entity(c->values[2]);
                 }
-                else if(strcmp(c->words[1], "field") == 0 || strcmp(c->words[1], "FIELD") == 0)
+                else if(c->tokens[1] == KEYWORD_FIELD)
                 {
-                    task_drop_field(c->words[2]);
+                    task_drop_field(c->values[2]);
                 }
                 else
                 {
@@ -518,7 +519,7 @@ void perform(command* c)
             }
             break;
         case COMMAND_CLOSE:
-            if(c->word_size == 1)
+            if(c->token_size == 1)
             {
                 task_close(1);
             }
@@ -531,9 +532,9 @@ void perform(command* c)
         case COMMAND_ENTITY:
             if(db != NULL)
             {
-                if(c->word_size == 2)
+                if(c->token_size == 2)
                 {
-                    if(strcmp(c->words[1], "fields") == 0 || strcmp(c->words[1], "FIELDS") == 0)
+                    if(c->tokens[1] == KEYWORD_FIELDS)
                     {
                         if(ctx->type == CTX_ENTITY)
                         {
@@ -551,7 +552,7 @@ void perform(command* c)
                             flow_status = -1;
                         }
                     }
-                    else if(strcmp(c->words[1], "count") == 0 || strcmp(c->words[1], "COUNT") == 0)
+                    else if(c->tokens[1] == KEYWORD_COUNT)
                     {
                         if(ctx->type == CTX_ENTITY)
                         {
@@ -566,7 +567,7 @@ void perform(command* c)
                     }
                     else
                     {
-                        ENTITY *e = find_entity(c->words[1]);
+                        ENTITY *e = find_entity(c->values[1]);
                         if(e)
                         {
                             set_ctx_entity(e);
@@ -574,12 +575,12 @@ void perform(command* c)
                         }
                         else
                         {
-                            printf("There is not entity '%s' in database\n", c->words[1]);
+                            printf("There is not entity '%s' in database\n", c->values[1]);
                             flow_status = 0;
                         }
                     }
                 }
-                else if(c->word_size == 1)
+                else if(c->token_size == 1)
                 {
                     if(ctx->type == CTX_ENTITY)
                     {
@@ -612,7 +613,7 @@ void perform(command* c)
         case COMMAND_BUFFER_OVERFLOW:
             break;
         case COMMAND_COMMIT: 
-            if(c->word_size == 1)
+            if(c->token_size == 1)
             {
                 if(db != NULL)
                 {
@@ -632,7 +633,7 @@ void perform(command* c)
             }
             break;
         case COMMAND_CONTEXT:
-            if(c->word_size == 1)
+            if(c->token_size == 1)
             {
                 context_t type = get_ctx_type();
                 switch(type)
@@ -650,9 +651,9 @@ void perform(command* c)
                         break;
                 }
             }
-            else if(c->word_size == 2)
+            else if(c->token_size == 2)
             {
-                if(strcmp(c->words[1], "up") == 0 || strcmp(c->words[1], "UP") == 0)
+                if(c->tokens[1] == KEYWORD_UP)
                 {
                     context_up();
                 }
@@ -669,17 +670,17 @@ void perform(command* c)
             }
             break;
         case COMMAND_SET:
-            if(c->word_size > 1)
+            if(c->token_size > 1)
             {
-                if(strcmp(c->words[1], "runtime") == 0 || strcmp(c->words[1], "RUNTIME") == 0)
+                if(c->tokens[1] == KEYWORD_RUNTIME)
                 {
-                    if(c->word_size == 3)
+                    if(c->token_size == 3)
                     {
-                        if(strcmp(c->words[2], "on") == 0 || strcmp(c->words[2], "ON") == 0)
+                        if(c->tokens[2] == KEYWORD_ON)
                         {
                             runtime = 1;
                         }
-                        else if(strcmp(c->words[2], "off") == 0 || strcmp(c->words[2], "OFF") == 0)
+                        else if(c->tokens[2] == KEYWORD_OFF)
                         {
                             runtime = 0;
                         }
@@ -697,7 +698,7 @@ void perform(command* c)
                         flow_status = -1;
                     }
                 }
-                else if(strcmp(c->words[1], "charset") == 0 || strcmp(c->words[1], "CHARSET") == 0)
+                else if(c->tokens[1] == KEYWORD_CHARSET)
                 {
                     // set charset
                 }

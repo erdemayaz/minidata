@@ -32,7 +32,7 @@ void split_string(command *c, char* string, int* size)
             *size = i + 1;
             return;
         }
-        strcpy(c->words[i], token);
+        strcpy(c->values[i], token);
         token = strtok(NULL, " ");
         ++i;
     }

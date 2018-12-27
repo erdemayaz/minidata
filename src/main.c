@@ -19,6 +19,7 @@ int runtime;
 
 clock_t begin, end;
 
+/*
 void sli(char *source_name)
 {
 	FILE *f = open_source_file(source_name);
@@ -64,18 +65,15 @@ void sli(char *source_name)
 		printf("File not found\n");
 	}
 }
+*/
 
 void cli()
 {
-	char command_text[BUFFER_SIZE];
 	command c;
 	while(1)
 	{
-		get_command(command_text);
+		get_command(&c);
 		begin = clock();
-		if(command_text[0] == '\0')
-			continue;
-		create_command(command_text, &c);
 		if(c.type == COMMAND_UNDEFINED)
 		{
 			printf("Undefined command\n");
@@ -116,7 +114,7 @@ int main(int argc, char* argv[])
 	{
 		flow_mode = 2;
 		begin = clock();
-		sli(argv[1]);
+		//sli(argv[1]);
 		end = clock();
 		printf("elapsed time: %.3lfs\n", ((double) (end - begin)) / CLOCKS_PER_SEC);
 	}
