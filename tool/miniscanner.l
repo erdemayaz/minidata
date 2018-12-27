@@ -48,3 +48,13 @@ int yywrap()
 {
     return 1;
 }
+
+void yyflush()
+{
+    YY_FLUSH_BUFFER;
+}
+
+void yysetscan(char *text)
+{
+    yy_scan_string(text);
+}

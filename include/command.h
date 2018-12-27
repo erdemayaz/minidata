@@ -29,6 +29,8 @@ typedef struct command
 
 void get_command(command *c);
 
+void get_command_from_buffer(command *c, char *buffer);
+
 void clear_buffer(char* buffer);
 
 void clear_command(char* buffer);

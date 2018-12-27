@@ -6,6 +6,8 @@
 #include "../tool/miniscanner.h"
 
 extern int yylex();
+extern void yyflush();
+extern void yysetscan(char *text);
 extern int yylineno;
 extern char* yytext;
 
@@ -13,7 +15,6 @@ void get_command(command *c)
 {
     int ntoken;
     c->token_size = 0;
-    printf("> ");
     ntoken = yylex();
     while(ntoken)
     {
@@ -47,7 +48,8 @@ void get_command(command *c)
         else
         {
             c->type = COMMAND_BUFFER_OVERFLOW;
-            break;
+            yyflush();
+            return;
         }
         ntoken = yylex();
     }
@@ -88,6 +90,13 @@ void get_command(command *c)
             c->type = COMMAND_UNDEFINED;
             break;
     }
+}
+
+void get_command_from_buffer(command *c, char *buffer)
+{
+    yyflush();
+    yysetscan(buffer);
+    get_command(c);
 }
 
 void clear_command(char* buffer)

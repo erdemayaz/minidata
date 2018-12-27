@@ -6,3 +6,4 @@
 *.o
 *.mndt
 *.mnty
+lex.yy.c
