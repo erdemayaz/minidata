@@ -99,11 +99,12 @@ void get_command_from_buffer(command *c, char *buffer)
     get_command(c);
 }
 
-void clear_command(char* buffer)
+void clear_command(command *c)
 {
-    if(buffer != NULL)
+    register int i;
+    for(i = 0; i < WORD_SIZE; ++i)
     {
-        memset(buffer, 0, BUFFER_SIZE);
+        c->tokens[i] = -1;
     }
 }
 

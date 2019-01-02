@@ -34,6 +34,7 @@ void sli(char *source_name)
 				command_text[command_len - 1] = '\0';
 			if(command_text[0] == '\0')
 				continue; 
+			clear_command(&c);
 			get_command_from_buffer(&c, command_text);
 			if(c.type == COMMAND_UNDEFINED)
 			{
@@ -71,6 +72,7 @@ void cli()
 	while(1)
 	{
 		printf("> ");
+		clear_command(&c);
 		get_command(&c);
 		begin = clock();
 		if(c.type == COMMAND_UNDEFINED)

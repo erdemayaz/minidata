@@ -390,60 +390,83 @@ void perform(command* c)
             }
             break;
         case COMMAND_CREATE:
-            if(c->token_size == 5)
+            if(c->tokens[1] == KEYWORD_DATABASE)
             {
-                if(c->tokens[1] == KEYWORD_FIELD)
+                if(c->tokens[2] == TOKEN_IDENTIFIER)
                 {
-                    if(db != NULL)
+                    task_create_database(c->values[2]);
+                }
+                else
+                {
+                    printf("'CREATE DATABASE' command takes 1 parameter(name:identity)\n");
+                    flow_status = 0;
+                }
+            }
+            else if(c->tokens[1] == KEYWORD_ENTITY)
+            {
+                if(db != NULL)
+                {
+                    if(c->tokens[2] == TOKEN_IDENTIFIER)
                     {
-                        if(ctx->type == CTX_ENTITY)
+                        task_create_entity(c->values[2]);
+                    }
+                    else
+                    {
+                        printf("'CREATE ENTITY' command takes 1 parameter(name:identity)\n");
+                    }
+                }
+                else
+                {
+                    if(flow_mode == 1)
+                        printf("Not exist database in context\n");
+                    flow_status = -1;
+                }
+            }
+            else if(c->tokens[1] == KEYWORD_FIELD)
+            {
+                if(db != NULL)
+                {
+                    if(ctx->type == CTX_ENTITY)
+                    {
+                        data_t type;
+                        if(c->tokens[2] == KEYWORD_STRING)
                         {
-                            data_t type;
-                            if(c->tokens[2] == KEYWORD_STRING)
+                            type = TYPE_STRING;
+                        }
+                        else if(c->tokens[2] == KEYWORD_NUMBER)
+                        {
+                            type = TYPE_NUMBER;
+                        }
+                        else if(c->tokens[2] == KEYWORD_OBJECT)
+                        {
+                            type = TYPE_OBJECT;
+                        }
+                        else if(c->tokens[2] == KEYWORD_ARRAY)
+                        {
+                            type = TYPE_ARRAY;
+                        }
+                        else if(c->tokens[2] == KEYWORD_BOOLEAN)
+                        {
+                            type = TYPE_BOOLEAN;
+                        }
+                        else if(c->tokens[2] == KEYWORD_NULL)
+                        {
+                            type = TYPE_NULL;
+                        }
+                        else
+                        {
+                            printf("'%s' is undefined data type\n", c->values[2]);
+                            flow_status = 0;
+                            return;
+                        }
+                        int status;
+                        int size;
+                        if(c->tokens[3] == TOKEN_INTNUM)
+                        {
+                            size = string_to_integer(c->values[3], &status);
+                            if(status == 0)
                             {
-                                type = TYPE_STRING;
-                            }
-                            else if(c->tokens[2] == KEYWORD_NUMBER)
-                            {
-                                type = TYPE_NUMBER;
-                            }
-                            else if(c->tokens[2] == KEYWORD_OBJECT)
-                            {
-                                type = TYPE_OBJECT;
-                            }
-                            else if(c->tokens[2] == KEYWORD_ARRAY)
-                            {
-                                type = TYPE_ARRAY;
-                            }
-                            else if(c->tokens[2] == KEYWORD_BOOLEAN)
-                            {
-                                type = TYPE_BOOLEAN;
-                            }
-                            else if(c->tokens[2] == KEYWORD_NULL)
-                            {
-                                type = TYPE_NULL;
-                            }
-                            else
-                            {
-                                printf("'%s' is undefined data type\n", c->values[2]);
-                                flow_status = 0;
-                                return;
-                            }
-                            int status;
-                            int size;
-                            if(c->tokens[3] == TOKEN_INTNUM)
-                            {
-                                size = string_to_integer(c->values[3], &status);
-                                if(status == 0)
-                                {
-                                    if(size < 0)
-                                    {
-                                        printf("Incorrect input for size\n");
-                                        flow_status = 0;
-                                        return;
-                                    }
-                                }
-                                else
+                                if(size < 0)
                                 {
                                     printf("Incorrect input for size\n");
                                     flow_status = 0;
@@ -456,80 +479,41 @@ void perform(command* c)
                                 flow_status = 0;
                                 return;
                             }
-                            if(c->tokens[4] == TOKEN_IDENTIFIER)
-                            {
-                                task_create_field(c->values[4], type, (uint32_t) size);
-                            }
-                            else
-                            {
-                                printf("Incorrect input for name\n");
-                                flow_status = 0;
-                                return;
-                            }
                         }
                         else
                         {
-                            if(flow_mode == 1)
-                                printf("Not exist entity in context\n");
-                            flow_status = -1;
+                            printf("Incorrect input for size\n");
+                            flow_status = 0;
+                            return;
+                        }
+                        if(c->tokens[4] == TOKEN_IDENTIFIER)
+                        {
+                            task_create_field(c->values[4], type, (uint32_t) size);
+                        }
+                        else
+                        {
+                            printf("Incorrect input for name\n");
+                            flow_status = 0;
+                            return;
                         }
                     }
                     else
                     {
                         if(flow_mode == 1)
-                            printf("Not exist database in context\n");
+                            printf("Not exist entity in context\n");
                         flow_status = -1;
                     }
                 }
                 else
                 {
-                    printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
-                    flow_status = 0;
-                }
-            }
-            else if(c->token_size == 3)
-            {
-                if(c->tokens[1] == KEYWORD_DATABASE)
-                {
-                    if(c->tokens[2] == TOKEN_IDENTIFIER)
-                    {
-                        task_create_database(c->values[2]);
-                    }
-                    else
-                    {
-                        printf("'CREATE DATABASE' command takes 1 parameter(name:identity)\n");
-                        flow_status = 0;
-                    }
-                }
-                else if(c->tokens[1] == KEYWORD_ENTITY)
-                {
-                    if(db != NULL)
-                    {
-                        if(c->tokens[2] == TOKEN_IDENTIFIER)
-                        {
-                            task_create_entity(c->values[2]);
-                        }
-                        else
-                        {
-                            printf("'CREATE ENTITY' command takes 1 parameter(name:identity)\n");
-                        }
-                    }
-                    else
-                    {
-                        if(flow_mode == 1)
-                            printf("Not exist database in context\n");
-                        flow_status = -1;
-                    }
-                }
-                else
-                {
-                    printf("'%s' is undefined type\n", c->values[1]);
-                    flow_status = 0;
+                    if(flow_mode == 1)
+                        printf("Not exist database in context\n");
+                    flow_status = -1;
                 }
             }
             else
             {
-                printf("'CREATE' command takes 2 parameter(type:[DATABASE, ENTITY, FIELD], name:identity)\n");
+                printf("'CREATE' command takes 1 parameter(type:[DATABASE, ENTITY, FIELD])\n");
                 flow_status = 0;
             }
             break;
