@@ -355,12 +355,20 @@ void perform(command* c)
                 }
                 else
                 {
-                    task_database(c->values[1]);
-                    if(db == NULL)
+                    if(c->tokens[1] == TOKEN_IDENTIFIER)
                     {
-                        if(flow_mode == 1)
-                            printf("Connection failed\n");
-                        flow_status = -1;
+                        task_database(c->values[1]);
+                        if(db == NULL)
+                        {
+                            if(flow_mode == 1)
+                                printf("Connection failed\n");
+                            flow_status = -1;
+                        }
+                    }
+                    else
+                    {
+                        printf("'DATABASE' command takes 1 optional parameter(name:identity)\n");
+                        flow_status = 0;
                     }
                 }
             }
@@ -422,10 +430,20 @@ void perform(command* c)
                                 return;
                             }
                             int status;
-                            int size = string_to_integer(c->values[3], &status);
-                            if(status == 0)
+                            int size;
+                            if(c->tokens[3] == TOKEN_INTNUM)
                             {
-                                if(size < 0)
+                                size = string_to_integer(c->values[3], &status);
+                                if(status == 0)
+                                {
+                                    if(size < 0)
+                                    {
+                                        printf("Incorrect input for size\n");
+                                        flow_status = 0;
+                                        return;
+                                    }
+                                }
+                                else
                                 {
                                     printf("Incorrect input for size\n");
                                     flow_status = 0;
@@ -438,7 +456,16 @@ void perform(command* c)
                                 flow_status = 0;
                                 return;
                             }
-                            task_create_field(c->values[4], type, (uint32_t) size);
+                            if(c->tokens[4] == TOKEN_IDENTIFIER)
+                            {
+                                task_create_field(c->values[4], type, (uint32_t) size);
+                            }
+                            else
+                            {
+                                printf("Incorrect input for name\n");
+                                flow_status = 0;
+                                return;
+                            }
                         }
                         else
                         {
@@ -464,13 +491,28 @@ void perform(command* c)
             {
                 if(c->tokens[1] == KEYWORD_DATABASE)
                 {
-                    task_create_database(c->values[2]);
+                    if(c->tokens[2] == TOKEN_IDENTIFIER)
+                    {
+                        task_create_database(c->values[2]);
+                    }
+                    else
+                    {
+                        printf("'CREATE DATABASE' command takes 1 parameter(name:identity)\n");
+                        flow_status = 0;
+                    }
                 }
                 else if(c->tokens[1] == KEYWORD_ENTITY)
                 {
                     if(db != NULL)
                     {
-                        task_create_entity(c->values[2]);
+                        if(c->tokens[2] == TOKEN_IDENTIFIER)
+                        {
+                            task_create_entity(c->values[2]);
+                        }
+                        else
+                        {
+                            printf("'CREATE ENTITY' command takes 1 parameter(name:identity)\n");
+                        }
                     }
                     else
                     {
@@ -496,15 +538,39 @@ void perform(command* c)
             {
                 if(c->tokens[1] == KEYWORD_DATABASE)
                 {
-                    task_drop_database(c->values[2]);
+                    if(c->tokens[2] == TOKEN_IDENTIFIER)
+                    {
+                        task_drop_database(c->values[2]);
+                    }
+                    else
+                    {
+                        printf("'DROP DATABASE' command takes 1 parameter(name:identity)\n");
+                        flow_status = 0;
+                    }
                 }
                 else if(c->tokens[1] == KEYWORD_ENTITY)
                 {
-                    task_drop_entity(c->values[2]);
+                    if(c->tokens[2] == TOKEN_IDENTIFIER)
+                    {
+                        task_drop_entity(c->values[2]);
+                    }
+                    else
+                    {
+                        printf("'DROP ENTITY' command takes 1 parameter(name:identity)\n");
+                        flow_status = 0;
+                    }
                 }
                 else if(c->tokens[1] == KEYWORD_FIELD)
                 {
-                    task_drop_field(c->values[2]);
+                    if(c->tokens[2] == TOKEN_IDENTIFIER)
+                    {
+                        task_drop_field(c->values[2]);
+                    }
+                    else
+                    {
+                        printf("'DROP FIELD' command takes 1 parameter(name:identity)\n");
+                        flow_status = 0;
+                    }
                 }
                 else
                 {
@@ -565,7 +631,7 @@ void perform(command* c)
                             flow_status = -1;
                         }
                     }
-                    else
+                    else if(c->tokens[1] == TOKEN_IDENTIFIER)
                     {
                         ENTITY *e = find_entity(c->values[1]);
                         if(e)
@@ -578,6 +644,11 @@ void perform(command* c)
                             printf("There is not entity '%s' in database\n", c->values[1]);
                             flow_status = 0;
                         }
+                    }
+                    else
+                    {
+                        printf("'ENTITY' command takes 1 optional parameter(type:[ENTITY, COUNT] || name:identity)\n");
+                        flow_status = 0;
                     }
                 }
                 else if(c->token_size == 1)
@@ -595,7 +666,7 @@ void perform(command* c)
                 }
                 else
                 {
-                    printf("'ENTITY' command takes 1 optional parameter(name:identity)\n");
+                    printf("'ENTITY' command takes 1 optional parameter(type:[ENTITY, COUNT] || name:identity)\n");
                     flow_status = 0;
                 }
             }
