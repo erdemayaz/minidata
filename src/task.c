@@ -459,14 +459,24 @@ void perform(command* c)
                             flow_status = 0;
                             return;
                         }
-                        int status;
-                        int size;
-                        if(c->tokens[3] == TOKEN_INTNUM)
+
+                        if(type == TYPE_NUMBER || type == TYPE_STRING)
                         {
-                            size = string_to_integer(c->values[3], &status);
-                            if(status == 0)
+                            int status;
+                            int size;
+                            if(c->tokens[3] == TOKEN_INTNUM)
                             {
-                                if(size < 0)
+                                size = string_to_integer(c->values[3], &status);
+                                if(status == 0)
+                                {
+                                    if(size < 0)
+                                    {
+                                        printf("Incorrect input for size\n");
+                                        flow_status = 0;
+                                        return;
+                                    }
+                                }
+                                else
                                 {
                                     printf("Incorrect input for size\n");
                                     flow_status = 0;
@@ -479,23 +489,31 @@ void perform(command* c)
                                 flow_status = 0;
                                 return;
                             }
+                            if(c->tokens[4] == TOKEN_IDENTIFIER)
+                            {
+                                task_create_field(c->values[4], type, (uint32_t) size);
+                            }
+                            else
+                            {
+                                printf("Incorrect input for name\n");
+                                flow_status = 0;
+                                return;
+                            }
                         }
                         else
                         {
-                            printf("Incorrect input for size\n");
-                            flow_status = 0;
-                            return;
+                            if(c->tokens[3] == TOKEN_IDENTIFIER)
+                            {
+                                task_create_field(c->values[3], type, (uint32_t) 0);
+                            }
+                            else
+                            {
+                                printf("Incorrect input for name\n");
+                                flow_status = 0;
+                                return;
+                            }
                         }
-                        if(c->tokens[4] == TOKEN_IDENTIFIER)
-                        {
-                            task_create_field(c->values[4], type, (uint32_t) size);
-                        }
-                        else
-                        {
-                            printf("Incorrect input for name\n");
-                            flow_status = 0;
-                            return;
-                        }
+
                     }
                     else
                     {
